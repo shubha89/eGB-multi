@@ -1,7 +1,7 @@
-# eGB JAX Eccentric pyTDI
+# eGB-multi
 
-Standalone extraction of the JAX eccentric compact-binary response model from
-`eGB-multi`.
+Standalone JAX eccentric compact-binary response model with switchable source
+physics and pyTDI helpers.
 
 This repo focuses on:
 
