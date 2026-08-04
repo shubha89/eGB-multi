@@ -1,0 +1,17 @@
+name: egb-multi
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - numpy>=2.0
+  - scipy>=1.13
+  - matplotlib>=3.8
+  - jupyterlab>=4
+  - ipykernel>=6
+  - pytest>=8
+  - pip:
+      - "jax[cpu]>=0.10"
+      - "pytdi>=2.1"
+      - "lisaorbits>=3.0"
+      - "-e ."

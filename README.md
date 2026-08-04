@@ -20,6 +20,13 @@ included here.
 python -m pip install -e ".[test,orbits]"
 ```
 
+Or create the documented Conda environment:
+
+```bash
+conda env create -f environment.yml
+conda activate egb-multi
+```
+
 ## Minimal Use
 
 ```python
@@ -63,4 +70,12 @@ Use `physics_mode` to control source physics in the JAX exact-link path:
 
 ```bash
 python -m pytest
+```
+
+## Notebook
+
+Open the switchable eccentric model example with:
+
+```bash
+jupyter lab notebooks/eccentric_pytdi_switches.ipynb
 ```

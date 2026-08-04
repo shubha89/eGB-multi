@@ -21,6 +21,11 @@ orbits = [
 test = [
     "pytest>=8",
 ]
+notebook = [
+    "ipykernel>=6",
+    "jupyterlab>=4",
+    "matplotlib>=3.8",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
