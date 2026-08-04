@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "egb-jax-eccentric-pytdi"
+version = "0.1.0"
+description = "JAX eccentric compact-binary response model with switchable physics and pyTDI helpers."
+requires-python = ">=3.11"
+dependencies = [
+    "jax[cpu]>=0.10",
+    "numpy>=2.0",
+    "pytdi>=2.1",
+    "scipy>=1.13",
+]
+
+[project.optional-dependencies]
+orbits = [
+    "lisaorbits>=3.0",
+]
+test = [
+    "pytest>=8",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
