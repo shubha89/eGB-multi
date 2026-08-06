@@ -26,6 +26,7 @@ Or create the documented Conda environment:
 conda env create -f environment.yml
 conda activate egb-multi
 ```
+OR simply ask your AI agent to install this ;) 
 
 ## Minimal Use
 
