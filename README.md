@@ -6,6 +6,7 @@ physics and pyTDI helpers.
 This repo focuses on:
 
 - switchable eccentric source physics: `newtonian`, `1pn_no_periastron`, `1pn`,
+- separate fixed and Peters-Mathews source evolution modes,
 - batched JAX source strain and six-link LISA response generation,
 - optional interpolation and harmonic-carrier link paths,
 - pyTDI conversion from six GW-only links to Michelson `X/Y/Z`,
@@ -54,18 +55,29 @@ xyz = eccentric_xyz_jax(
     state,
     source,
     batch_size=1,
-    physics_mode="1pn",
+    physics_mode="1pn_periastron",
 )
 print({channel: value.shape for channel, value in xyz.items()})
 ```
 
-## Physics Switches
+## Physics And Evolution Switches
 
-Use `physics_mode` to control source physics in the JAX exact-link path:
+Use `physics_mode` to control source physics in the NumPy and JAX exact-link
+paths:
 
 - `newtonian`: Newtonian orbital dynamics, no periastron advance.
 - `1pn_no_periastron`: 1PN orbital corrections without periastron advance.
-- `1pn`: 1PN orbital corrections with periastron advance.
+- `1pn_periastron`: 1PN orbital corrections with periastron advance. The
+  historical `1pn` spelling is still accepted as an alias.
+
+Use `evolution_mode` in the NumPy source generator to control secular
+evolution:
+
+- `fixed`: hold the source parameters fixed.
+- `peters_mathews` or `pm`: evolve radial mean motion, eccentricity, and mean
+  anomaly with Peters-Mathews radiation reaction.
+- `peters_mathews_orbital_only` and `peters_mathews_eccentricity_only`: partial
+  diagnostics that isolate the two secular pieces.
 
 ## Tests
 

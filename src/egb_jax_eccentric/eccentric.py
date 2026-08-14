@@ -105,6 +105,7 @@ ECCENTRIC_PHYSICS_MODES: dict[str, EccentricPhysicsOptions] = {
     "newtonian": EccentricPhysicsOptions(False, False),
     "1pn_no_periastron": EccentricPhysicsOptions(True, False),
     "1pn": EccentricPhysicsOptions(True, True),
+    "1pn_periastron": EccentricPhysicsOptions(True, True),
 }
 
 ECCENTRIC_EVOLUTION_MODES = (
@@ -114,24 +115,60 @@ ECCENTRIC_EVOLUTION_MODES = (
     "peters_mathews_eccentricity_only",
 )
 
+ECCENTRIC_EVOLUTION_MODE_ALIASES: dict[str, str] = {
+    "pm": "peters_mathews",
+    "peters-mathews": "peters_mathews",
+}
+
+ECCENTRIC_PHYSICS_MODE_ALIASES: dict[str, str] = {
+    "1pn": "1pn",
+    "1pn_periastron": "1pn",
+    "1pn+periastron": "1pn",
+    "1pn_with_periastron": "1pn",
+    "1pn_no_precession": "1pn_no_periastron",
+}
+
+
+def eccentric_physics_mode_label(mode: str | EccentricPhysicsOptions = "1pn") -> str:
+    """Return the canonical physics-mode label for eccentric source terms."""
+
+    if isinstance(mode, EccentricPhysicsOptions):
+        if mode == EccentricPhysicsOptions(False, False):
+            return "newtonian"
+        if mode == EccentricPhysicsOptions(True, False):
+            return "1pn_no_periastron"
+        if mode == EccentricPhysicsOptions(True, True):
+            return "1pn"
+        raise ValueError("custom eccentric physics switches do not have a canonical mode label")
+    return ECCENTRIC_PHYSICS_MODE_ALIASES.get(mode, mode)
+
 
 def eccentric_physics_options(mode: str | EccentricPhysicsOptions = "1pn") -> EccentricPhysicsOptions:
     """Return normalized eccentric physics switches."""
 
     if isinstance(mode, EccentricPhysicsOptions):
         return mode
+    mode = eccentric_physics_mode_label(mode)
     try:
         return ECCENTRIC_PHYSICS_MODES[mode]
     except KeyError as exc:
         raise ValueError(f"unknown eccentric physics mode {mode!r}") from exc
 
 
-def _validate_evolution_mode(evolution_mode: str) -> None:
+def eccentric_evolution_mode_label(evolution_mode: str) -> str:
+    """Return the canonical evolution-mode label for eccentric source parameters."""
+
+    return ECCENTRIC_EVOLUTION_MODE_ALIASES.get(evolution_mode, evolution_mode)
+
+
+def _validate_evolution_mode(evolution_mode: str) -> str:
+    evolution_mode = eccentric_evolution_mode_label(evolution_mode)
     if evolution_mode not in ECCENTRIC_EVOLUTION_MODES:
         raise ValueError(
             "evolution_mode must be one of 'fixed', 'peters_mathews', "
             "'peters_mathews_orbital_only', or 'peters_mathews_eccentricity_only'"
         )
+    return evolution_mode
 
 
 def _validate_eccentricity(eccentricity: float | NDArray[np.float64]) -> None:
@@ -395,7 +432,7 @@ def eccentric_dynamics(
     """Return the 1PN quasi-Keplerian orbital variables."""
 
     _validate_eccentricity(source.eccentricity)
-    _validate_evolution_mode(evolution_mode)
+    evolution_mode = _validate_evolution_mode(evolution_mode)
     if source.mean_motion <= 0.0:
         raise ValueError("mean_motion must be positive")
     if source.distance_m <= 0.0:

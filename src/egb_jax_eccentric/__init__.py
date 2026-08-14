@@ -1,16 +1,20 @@
 """JAX eccentric compact-binary response models with pyTDI helpers."""
 
 from .eccentric import (
+    ECCENTRIC_EVOLUTION_MODE_ALIASES,
     ECCENTRIC_EVOLUTION_MODES,
+    ECCENTRIC_PHYSICS_MODE_ALIASES,
     ECCENTRIC_PHYSICS_MODES,
     EccentricBinaryParams,
     EccentricHarmonicComponent,
     EccentricPhysicsOptions,
     eccentric_complex_strain,
     eccentric_dynamics,
+    eccentric_evolution_mode_label,
     eccentric_harmonic_components,
     eccentric_harmonic_indices,
     eccentric_harmonic_source_batch,
+    eccentric_physics_mode_label,
     eccentric_physics_options,
     eccentric_polarizations,
     mikkola_kepler,
@@ -41,7 +45,9 @@ from .pytdi_bridge import (
 )
 
 __all__ = [
+    "ECCENTRIC_EVOLUTION_MODE_ALIASES",
     "ECCENTRIC_EVOLUTION_MODES",
+    "ECCENTRIC_PHYSICS_MODE_ALIASES",
     "ECCENTRIC_PHYSICS_MODES",
     "EccentricBinaryParams",
     "EccentricHarmonicComponent",
@@ -55,12 +61,14 @@ __all__ = [
     "eccentric_complex_strain",
     "eccentric_complex_strain_batch_jax",
     "eccentric_dynamics",
+    "eccentric_evolution_mode_label",
     "eccentric_harmonic_components",
     "eccentric_harmonic_indices",
     "eccentric_harmonic_links_jax",
     "eccentric_harmonic_source_batch",
     "eccentric_links_interpolated_jax",
     "eccentric_links_jax",
+    "eccentric_physics_mode_label",
     "eccentric_physics_options",
     "eccentric_polarizations",
     "eccentric_xyz_jax",

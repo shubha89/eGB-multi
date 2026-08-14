@@ -8,7 +8,13 @@ import numpy as np
 from numpy.typing import NDArray
 
 from .constants import C_M_PER_S, G_M3_KG_S2, KILOPARSEC_M, SOLAR_MASS_KG
-from .eccentric import EccentricBinaryParams, EccentricHarmonicComponent, eccentric_harmonic_indices, eccentric_harmonic_source_batch
+from .eccentric import (
+    EccentricBinaryParams,
+    EccentricHarmonicComponent,
+    eccentric_harmonic_indices,
+    eccentric_harmonic_source_batch,
+    eccentric_physics_mode_label,
+)
 from .geometry import LISAState
 
 JAX_LINKS: tuple[tuple[int, int], ...] = (
@@ -42,13 +48,14 @@ def require_jax() -> None:
 
 
 def _physics_switches(physics_mode: str) -> tuple[bool, bool]:
+    physics_mode = eccentric_physics_mode_label(physics_mode)
     if physics_mode == "newtonian":
         return False, False
     if physics_mode == "1pn_no_periastron":
         return True, False
     if physics_mode == "1pn":
         return True, True
-    raise ValueError("physics_mode must be 'newtonian', '1pn_no_periastron', or '1pn'")
+    raise ValueError("physics_mode must be 'newtonian', '1pn_no_periastron', '1pn', or '1pn_periastron'")
 
 
 def pack_eccentric_sources(sources: EccentricBinaryParams | list[EccentricBinaryParams]) -> NDArray[np.float64]:
