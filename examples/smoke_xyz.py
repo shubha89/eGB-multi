@@ -20,7 +20,7 @@ def main() -> None:
         phi0=0.2,
     )
 
-    xyz = eccentric_xyz_jax(state, source, batch_size=1, physics_mode="1pn")
+    xyz = eccentric_xyz_jax(state, source, batch_size=1, physics_mode="1pn_periastron")
     for channel, value in xyz.items():
         print(channel, value.shape, np.sqrt(np.mean(np.abs(value) ** 2)))
 

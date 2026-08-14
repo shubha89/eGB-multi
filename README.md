@@ -5,7 +5,7 @@ physics and pyTDI helpers.
 
 This repo focuses on:
 
-- switchable eccentric source physics: `newtonian`, `1pn_no_periastron`, `1pn`,
+- switchable eccentric source physics: `newtonian`, `1pn_no_periastron`, `1pn_periastron`,
 - separate fixed and Peters-Mathews source evolution modes,
 - batched JAX source strain and six-link LISA response generation,
 - optional interpolation and harmonic-carrier link paths,
