@@ -101,6 +101,74 @@ class EccentricPhysicsOptions:
     include_periastron_advance: bool = True
 
 
+@dataclass(frozen=True)
+class PetersMathewsSwitchPoint:
+    """One calibration point for the automatic Peters--Mathews switch."""
+
+    f0_hz: float
+    eccentricity: float
+    total_mass_solar: float
+    symmetric_mass_ratio: float
+    duration_s: float
+    mismatch: float
+
+
+@dataclass(frozen=True)
+class PetersMathewsSwitchRule:
+    """Empirical rule for deciding when Peters--Mathews evolution is needed.
+
+    The rule stores fixed-1PN-vs-full-PM source-level mismatches over a sparse
+    calibration grid. Predictions use inverse-distance interpolation in
+    ``log(f0)``, eccentricity, ``log(total_mass)``, symmetric mass ratio, and
+    ``log(T_obs)``.
+    """
+
+    points: tuple[PetersMathewsSwitchPoint, ...]
+    mismatch_tolerance: float = 1.0e-2
+    neighbors: int = 4
+
+    def __post_init__(self) -> None:
+        if not self.points:
+            raise ValueError("PetersMathewsSwitchRule requires at least one calibration point")
+        _validate_mismatch_tolerance(self.mismatch_tolerance)
+        if self.neighbors < 1:
+            raise ValueError("neighbors must be positive")
+        for point in self.points:
+            _validate_switch_point(point)
+
+    def predict_mismatch(self, source: EccentricBinaryParams, duration_s: float) -> float:
+        """Predict fixed-1PN-vs-full-PM mismatch for ``source`` and duration."""
+
+        target = _switch_features_from_source(source, duration_s)
+        features = np.array([_switch_features(point) for point in self.points], dtype=np.float64)
+        scales = np.ptp(features, axis=0)
+        scales = np.where(scales > 0.0, scales, 1.0)
+        distances = np.linalg.norm((features - target) / scales, axis=1)
+        exact = np.nonzero(distances < 1.0e-12)[0]
+        if exact.size:
+            return float(self.points[int(exact[0])].mismatch)
+
+        count = min(self.neighbors, len(self.points))
+        indices = np.argsort(distances)[:count]
+        weights = 1.0 / np.maximum(distances[indices], 1.0e-12) ** 2
+        mismatches = np.array([self.points[int(index)].mismatch for index in indices], dtype=np.float64)
+        return float(np.sum(weights * mismatches) / np.sum(weights))
+
+    def evolution_mode_for(
+        self,
+        source: EccentricBinaryParams,
+        duration_s: float,
+        *,
+        mismatch_tolerance: float | None = None,
+    ) -> str:
+        """Return ``fixed`` or ``peters_mathews`` from the calibrated rule."""
+
+        tolerance = self.mismatch_tolerance if mismatch_tolerance is None else mismatch_tolerance
+        _validate_mismatch_tolerance(tolerance)
+        predicted = self.predict_mismatch(source, duration_s)
+        return "peters_mathews" if predicted >= tolerance else "fixed"
+
+
 ECCENTRIC_PHYSICS_MODES: dict[str, EccentricPhysicsOptions] = {
     "newtonian": EccentricPhysicsOptions(False, False),
     "1pn_no_periastron": EccentricPhysicsOptions(True, False),
@@ -113,11 +181,14 @@ ECCENTRIC_EVOLUTION_MODES = (
     "peters_mathews",
     "peters_mathews_orbital_only",
     "peters_mathews_eccentricity_only",
+    "auto",
 )
 
 ECCENTRIC_EVOLUTION_MODE_ALIASES: dict[str, str] = {
     "pm": "peters_mathews",
     "peters-mathews": "peters_mathews",
+    "adaptive": "auto",
+    "pm_auto": "auto",
 }
 
 ECCENTRIC_PHYSICS_MODE_ALIASES: dict[str, str] = {
@@ -166,9 +237,68 @@ def _validate_evolution_mode(evolution_mode: str) -> str:
     if evolution_mode not in ECCENTRIC_EVOLUTION_MODES:
         raise ValueError(
             "evolution_mode must be one of 'fixed', 'peters_mathews', "
-            "'peters_mathews_orbital_only', or 'peters_mathews_eccentricity_only'"
+            "'peters_mathews_orbital_only', 'peters_mathews_eccentricity_only', or 'auto'"
         )
     return evolution_mode
+
+
+def _validate_mismatch_tolerance(tolerance: float) -> None:
+    if not np.isfinite(tolerance) or tolerance < 0.0 or tolerance >= 1.0:
+        raise ValueError("pm_mismatch_tolerance must satisfy 0 <= tolerance < 1")
+
+
+def _validate_switch_point(point: PetersMathewsSwitchPoint) -> None:
+    if point.f0_hz <= 0.0:
+        raise ValueError("switch-rule f0_hz must be positive")
+    _validate_eccentricity(point.eccentricity)
+    if point.total_mass_solar <= 0.0:
+        raise ValueError("switch-rule total_mass_solar must be positive")
+    if not 0.0 < point.symmetric_mass_ratio <= 0.25:
+        raise ValueError("switch-rule symmetric_mass_ratio must satisfy 0 < eta <= 0.25")
+    if point.duration_s <= 0.0:
+        raise ValueError("switch-rule duration_s must be positive")
+    if not np.isfinite(point.mismatch) or point.mismatch < 0.0 or point.mismatch >= 1.0:
+        raise ValueError("switch-rule mismatch must satisfy 0 <= mismatch < 1")
+
+
+def _switch_features(point: PetersMathewsSwitchPoint) -> NDArray[np.float64]:
+    return np.array(
+        [
+            np.log(point.f0_hz),
+            point.eccentricity,
+            np.log(point.total_mass_solar),
+            point.symmetric_mass_ratio,
+            np.log(point.duration_s),
+        ],
+        dtype=np.float64,
+    )
+
+
+def _switch_features_from_source(source: EccentricBinaryParams, duration_s: float) -> NDArray[np.float64]:
+    if source.mean_motion <= 0.0:
+        raise ValueError("mean_motion must be positive")
+    if duration_s <= 0.0:
+        raise ValueError("duration_s must be positive")
+    total_mass_solar = source.m1_solar + source.m2_solar
+    if total_mass_solar <= 0.0:
+        raise ValueError("total source mass must be positive")
+    return np.array(
+        [
+            np.log(source.mean_motion / np.pi),
+            source.eccentricity,
+            np.log(total_mass_solar),
+            source.symmetric_mass_ratio,
+            np.log(duration_s),
+        ],
+        dtype=np.float64,
+    )
+
+
+def _duration_from_times(t: ArrayLike) -> float:
+    tt = np.asarray(t, dtype=np.float64)
+    if tt.size < 2:
+        raise ValueError("automatic Peters-Mathews switching requires at least two time samples")
+    return float(np.max(tt) - np.min(tt))
 
 
 def _validate_eccentricity(eccentricity: float | NDArray[np.float64]) -> None:
@@ -422,12 +552,111 @@ def peters_mathews_evolution(
     }
 
 
+def complex_strain_fitting_factor(
+    reference: ArrayLike,
+    candidate: ArrayLike,
+) -> float:
+    """Return the normalized complex overlap between two source strains."""
+
+    ref = np.asarray(reference, dtype=np.complex128)
+    cand = np.asarray(candidate, dtype=np.complex128)
+    if ref.shape != cand.shape:
+        raise ValueError("reference and candidate strains must have the same shape")
+    rr = float(np.vdot(ref, ref).real)
+    cc = float(np.vdot(cand, cand).real)
+    if rr <= 0.0 or cc <= 0.0:
+        return 0.0
+    ff = float(abs(np.vdot(ref, cand)) / np.sqrt(rr * cc))
+    return min(ff, 1.0)
+
+
+def complex_strain_mismatch(
+    reference: ArrayLike,
+    candidate: ArrayLike,
+) -> float:
+    """Return ``1 - FF`` for two source-level complex strains."""
+
+    return max(1.0 - complex_strain_fitting_factor(reference, candidate), 0.0)
+
+
+def peters_mathews_source_mismatch(
+    source: EccentricBinaryParams,
+    t: ArrayLike,
+    *,
+    physics_mode: str | EccentricPhysicsOptions = "1pn",
+) -> float:
+    """Compare fixed 1PN source strain to full Peters--Mathews evolution.
+
+    This is the quantity used by ``evolution_mode="auto"`` when no calibrated
+    rule is provided.
+    """
+
+    fixed = eccentric_complex_strain(source, t, physics_mode=physics_mode, evolution_mode="fixed")
+    full_pm = eccentric_complex_strain(source, t, physics_mode=physics_mode, evolution_mode="peters_mathews")
+    return complex_strain_mismatch(full_pm, fixed)
+
+
+def calibrate_peters_mathews_switch_rule(
+    sources: EccentricBinaryParams | list[EccentricBinaryParams],
+    t: ArrayLike,
+    *,
+    mismatch_tolerance: float = 1.0e-2,
+    physics_mode: str | EccentricPhysicsOptions = "1pn",
+    neighbors: int = 4,
+) -> PetersMathewsSwitchRule:
+    """Build a tolerance rule from fixed-1PN-vs-full-PM source mismatches."""
+
+    _validate_mismatch_tolerance(mismatch_tolerance)
+    source_list = [sources] if isinstance(sources, EccentricBinaryParams) else list(sources)
+    if not source_list:
+        raise ValueError("at least one source is required")
+    duration_s = _duration_from_times(t)
+    points = []
+    for source in source_list:
+        mismatch = peters_mathews_source_mismatch(source, t, physics_mode=physics_mode)
+        points.append(
+            PetersMathewsSwitchPoint(
+                f0_hz=float(source.mean_motion / np.pi),
+                eccentricity=float(source.eccentricity),
+                total_mass_solar=float(source.m1_solar + source.m2_solar),
+                symmetric_mass_ratio=float(source.symmetric_mass_ratio),
+                duration_s=duration_s,
+                mismatch=mismatch,
+            )
+        )
+    return PetersMathewsSwitchRule(tuple(points), mismatch_tolerance=mismatch_tolerance, neighbors=neighbors)
+
+
+def select_peters_mathews_evolution_mode(
+    source: EccentricBinaryParams,
+    t: ArrayLike,
+    *,
+    physics_mode: str | EccentricPhysicsOptions = "1pn",
+    pm_mismatch_tolerance: float = 1.0e-2,
+    pm_switch_rule: PetersMathewsSwitchRule | None = None,
+) -> str:
+    """Return ``fixed`` or ``peters_mathews`` for a requested PM tolerance."""
+
+    _validate_mismatch_tolerance(pm_mismatch_tolerance)
+    duration_s = _duration_from_times(t)
+    if pm_switch_rule is not None:
+        return pm_switch_rule.evolution_mode_for(
+            source,
+            duration_s,
+            mismatch_tolerance=pm_mismatch_tolerance,
+        )
+    mismatch = peters_mathews_source_mismatch(source, t, physics_mode=physics_mode)
+    return "peters_mathews" if mismatch >= pm_mismatch_tolerance else "fixed"
+
+
 def eccentric_dynamics(
     source: EccentricBinaryParams,
     t: ArrayLike,
     *,
     physics_mode: str | EccentricPhysicsOptions = "1pn",
     evolution_mode: str = "fixed",
+    pm_mismatch_tolerance: float = 1.0e-2,
+    pm_switch_rule: PetersMathewsSwitchRule | None = None,
 ) -> dict[str, NDArray[np.float64]]:
     """Return the 1PN quasi-Keplerian orbital variables."""
 
@@ -439,6 +668,14 @@ def eccentric_dynamics(
         raise ValueError("distance_m must be positive")
 
     tt = np.asarray(t, dtype=np.float64)
+    if evolution_mode == "auto":
+        evolution_mode = select_peters_mathews_evolution_mode(
+            source,
+            tt,
+            physics_mode=physics_mode,
+            pm_mismatch_tolerance=pm_mismatch_tolerance,
+            pm_switch_rule=pm_switch_rule,
+        )
     options = eccentric_physics_options(physics_mode)
     m = source.total_mass_kg
     eta = source.symmetric_mass_ratio
@@ -559,11 +796,20 @@ def eccentric_polarizations(
     *,
     physics_mode: str | EccentricPhysicsOptions = "1pn",
     evolution_mode: str = "fixed",
+    pm_mismatch_tolerance: float = 1.0e-2,
+    pm_switch_rule: PetersMathewsSwitchRule | None = None,
 ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     """Return `(h_plus, h_cross)` from the paper's quadrupole expressions."""
 
     tt = np.asarray(t, dtype=np.float64)
-    dyn = eccentric_dynamics(source, tt, physics_mode=physics_mode, evolution_mode=evolution_mode)
+    dyn = eccentric_dynamics(
+        source,
+        tt,
+        physics_mode=physics_mode,
+        evolution_mode=evolution_mode,
+        pm_mismatch_tolerance=pm_mismatch_tolerance,
+        pm_switch_rule=pm_switch_rule,
+    )
     m = source.total_mass_kg
     eta = source.symmetric_mass_ratio
     gm = G_M3_KG_S2 * m
@@ -599,10 +845,19 @@ def eccentric_complex_strain(
     *,
     physics_mode: str | EccentricPhysicsOptions = "1pn",
     evolution_mode: str = "fixed",
+    pm_mismatch_tolerance: float = 1.0e-2,
+    pm_switch_rule: PetersMathewsSwitchRule | None = None,
 ) -> NDArray[np.complex128]:
     """Return `h_plus - i h_cross`, matching the package's complex convention."""
 
-    h_plus, h_cross = eccentric_polarizations(source, t, physics_mode=physics_mode, evolution_mode=evolution_mode)
+    h_plus, h_cross = eccentric_polarizations(
+        source,
+        t,
+        physics_mode=physics_mode,
+        evolution_mode=evolution_mode,
+        pm_mismatch_tolerance=pm_mismatch_tolerance,
+        pm_switch_rule=pm_switch_rule,
+    )
     return h_plus.astype(np.complex128) - 1.0j * h_cross.astype(np.complex128)
 
 

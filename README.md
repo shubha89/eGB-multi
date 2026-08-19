@@ -78,6 +78,34 @@ evolution:
   anomaly with Peters-Mathews radiation reaction.
 - `peters_mathews_orbital_only` and `peters_mathews_eccentricity_only`: partial
   diagnostics that isolate the two secular pieces.
+- `auto` or `adaptive`: compare against `1pn` plus full Peters-Mathews
+  evolution and switch from `fixed` to `peters_mathews` once the requested
+  source-level mismatch tolerance is reached.
+
+For survey runs, calibrate the automatic switch on a representative grid once,
+then reuse the rule:
+
+```python
+from egb_jax_eccentric import calibrate_peters_mathews_switch_rule, eccentric_complex_strain
+
+rule = calibrate_peters_mathews_switch_rule(
+    calibration_sources,
+    calibration_times,
+    mismatch_tolerance=1.0e-2,
+)
+
+h = eccentric_complex_strain(
+    source,
+    times,
+    physics_mode="1pn_periastron",
+    evolution_mode="auto",
+    pm_mismatch_tolerance=1.0e-2,
+    pm_switch_rule=rule,
+)
+```
+
+If no `pm_switch_rule` is supplied, `evolution_mode="auto"` computes the
+fixed-vs-full-PM mismatch directly for that source and time grid.
 
 ## Tests
 

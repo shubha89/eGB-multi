@@ -3,6 +3,10 @@ import pytest
 
 from egb_jax_eccentric import (
     EccentricBinaryParams,
+    PetersMathewsSwitchPoint,
+    PetersMathewsSwitchRule,
+    calibrate_peters_mathews_switch_rule,
+    complex_strain_mismatch,
     eccentric_complex_strain,
     eccentric_complex_strain_batch_jax,
     eccentric_evolution_mode_label,
@@ -11,7 +15,9 @@ from egb_jax_eccentric import (
     eccentric_xyz_jax,
     has_package,
     lisa_orbit,
+    peters_mathews_source_mismatch,
     precompute_jax_link_geometry,
+    select_peters_mathews_evolution_mode,
 )
 
 
@@ -42,6 +48,7 @@ def test_numpy_physics_modes_are_finite_and_distinct():
 def test_mode_labels_keep_physics_and_evolution_axes_separate():
     assert eccentric_evolution_mode_label("fixed") == "fixed"
     assert eccentric_evolution_mode_label("pm") == "peters_mathews"
+    assert eccentric_evolution_mode_label("adaptive") == "auto"
     assert eccentric_physics_mode_label("newtonian") == "newtonian"
     assert eccentric_physics_mode_label("1pn_no_periastron") == "1pn_no_periastron"
     assert eccentric_physics_mode_label("1pn_periastron") == "1pn"
@@ -60,6 +67,68 @@ def test_mode_labels_keep_physics_and_evolution_axes_separate():
     pm_explicit = eccentric_complex_strain(source, t, physics_mode="1pn", evolution_mode="peters_mathews")
 
     assert np.allclose(pm_alias, pm_explicit)
+
+
+def test_auto_peters_mathews_switch_uses_requested_tolerance():
+    source = EccentricBinaryParams(
+        mean_motion=np.pi * 5.0e-3,
+        eccentricity=0.2,
+        m1_solar=1.4,
+        m2_solar=1.4,
+        inclination=0.8,
+        phi0=0.2,
+    )
+    t = np.linspace(0.0, 365.25 * 24.0 * 3600.0, 256)
+
+    fixed = eccentric_complex_strain(source, t, evolution_mode="fixed")
+    full_pm = eccentric_complex_strain(source, t, evolution_mode="peters_mathews")
+    direct_mismatch = peters_mathews_source_mismatch(source, t)
+
+    assert direct_mismatch == pytest.approx(complex_strain_mismatch(full_pm, fixed))
+    assert select_peters_mathews_evolution_mode(source, t, pm_mismatch_tolerance=0.99) == "fixed"
+    assert select_peters_mathews_evolution_mode(source, t, pm_mismatch_tolerance=0.0) == "peters_mathews"
+    assert np.allclose(eccentric_complex_strain(source, t, evolution_mode="auto", pm_mismatch_tolerance=0.99), fixed)
+    assert np.allclose(eccentric_complex_strain(source, t, evolution_mode="auto", pm_mismatch_tolerance=0.0), full_pm)
+
+
+def test_calibrated_peters_mathews_switch_rule_can_drive_auto_mode():
+    source = EccentricBinaryParams(
+        mean_motion=np.pi * 3.0e-3,
+        eccentricity=0.1,
+        m1_solar=0.8,
+        m2_solar=0.6,
+        inclination=0.8,
+        phi0=0.2,
+    )
+    t = np.linspace(0.0, 60.0 * 24.0 * 3600.0, 128)
+
+    rule = calibrate_peters_mathews_switch_rule([source], t, mismatch_tolerance=1.0e-2)
+    predicted = rule.predict_mismatch(source, duration_s=float(t[-1] - t[0]))
+    direct = peters_mathews_source_mismatch(source, t)
+
+    assert predicted == pytest.approx(direct)
+    assert rule.evolution_mode_for(source, float(t[-1] - t[0]), mismatch_tolerance=0.99) == "fixed"
+    assert rule.evolution_mode_for(source, float(t[-1] - t[0]), mismatch_tolerance=0.0) == "peters_mathews"
+    assert np.allclose(
+        eccentric_complex_strain(source, t, evolution_mode="auto", pm_switch_rule=rule, pm_mismatch_tolerance=0.99),
+        eccentric_complex_strain(source, t, evolution_mode="fixed"),
+    )
+
+
+def test_peters_mathews_switch_rule_interpolates_between_points():
+    source = EccentricBinaryParams(mean_motion=np.pi * 1.5e-3, eccentricity=0.15, m1_solar=0.7, m2_solar=0.5)
+    duration_s = 100.0
+    rule = PetersMathewsSwitchRule(
+        (
+            PetersMathewsSwitchPoint(1.0e-3, 0.1, 1.2, source.symmetric_mass_ratio, duration_s, 1.0e-3),
+            PetersMathewsSwitchPoint(2.0e-3, 0.2, 1.2, source.symmetric_mass_ratio, duration_s, 1.0e-1),
+        ),
+        mismatch_tolerance=1.0e-2,
+    )
+
+    predicted = rule.predict_mismatch(source, duration_s)
+
+    assert 1.0e-3 < predicted < 1.0e-1
 
 
 @pytest.mark.skipif(not has_package("jax"), reason="jax not installed")
