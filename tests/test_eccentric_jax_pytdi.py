@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+import egb_jax_eccentric.eccentric as eccentric_module
 from egb_jax_eccentric import (
     EccentricBinaryParams,
     PetersMathewsSwitchPoint,
@@ -129,6 +130,45 @@ def test_peters_mathews_switch_rule_interpolates_between_points():
     predicted = rule.predict_mismatch(source, duration_s)
 
     assert 1.0e-3 < predicted < 1.0e-1
+
+
+def test_peters_mathews_derivatives_reject_nonphysical_eccentricity_arrays():
+    source = EccentricBinaryParams(mean_motion=np.pi * 1.0e-3, eccentricity=0.2, m1_solar=0.6, m2_solar=0.4)
+    n = np.array([source.mean_motion, source.mean_motion])
+
+    with pytest.raises(ValueError, match="eccentricity"):
+        eccentric_module.peters_mathews_derivatives(n, np.array([-0.1, 0.2]), source.total_mass_kg, source.symmetric_mass_ratio)
+
+    with pytest.raises(ValueError, match="eccentricity"):
+        eccentric_module.peters_mathews_derivatives(n, np.array([0.2, 1.0]), source.total_mass_kg, source.symmetric_mass_ratio)
+
+    with pytest.raises(ValueError, match="eccentricity"):
+        eccentric_module.peters_mathews_derivatives(n, np.array([0.2, np.nan]), source.total_mass_kg, source.symmetric_mass_ratio)
+
+
+def test_peters_mathews_private_state_derivative_rejects_nonphysical_states():
+    source = EccentricBinaryParams(mean_motion=np.pi * 1.0e-3, eccentricity=0.2, m1_solar=0.6, m2_solar=0.4)
+
+    with pytest.raises(ValueError, match="eccentricity"):
+        eccentric_module._peters_mathews_state_derivative(
+            np.array([source.mean_motion, -1.0e-6, 0.0]),
+            source.total_mass_kg,
+            source.symmetric_mass_ratio,
+        )
+
+    with pytest.raises(ValueError, match="eccentricity"):
+        eccentric_module._peters_mathews_state_derivative(
+            np.array([source.mean_motion, 1.0, 0.0]),
+            source.total_mass_kg,
+            source.symmetric_mass_ratio,
+        )
+
+    with pytest.raises(ValueError, match="mean_motion"):
+        eccentric_module._peters_mathews_state_derivative(
+            np.array([0.0, source.eccentricity, 0.0]),
+            source.total_mass_kg,
+            source.symmetric_mass_ratio,
+        )
 
 
 @pytest.mark.skipif(not has_package("jax"), reason="jax not installed")

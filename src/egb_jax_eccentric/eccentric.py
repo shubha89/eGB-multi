@@ -303,8 +303,19 @@ def _duration_from_times(t: ArrayLike) -> float:
 
 def _validate_eccentricity(eccentricity: float | NDArray[np.float64]) -> None:
     e = np.asarray(eccentricity, dtype=np.float64)
-    if np.any(e < 0.0) or np.any(e >= 1.0):
-        raise ValueError("eccentricity must satisfy 0 <= e < 1")
+    if np.any(~np.isfinite(e)) or np.any(e < 0.0) or np.any(e >= 1.0):
+        raise ValueError("eccentricity must be finite and satisfy 0 <= e < 1")
+
+
+def _validate_peters_mathews_state(state: NDArray[np.float64]) -> None:
+    values = np.asarray(state, dtype=np.float64)
+    if values.shape != (3,):
+        raise ValueError("Peters-Mathews state must have shape (3,)")
+    if np.any(~np.isfinite(values)):
+        raise ValueError("Peters-Mathews state must be finite")
+    if values[0] <= 0.0:
+        raise ValueError("Peters-Mathews mean_motion state must be positive")
+    _validate_eccentricity(values[1])
 
 
 def _pn_x_from_azimuthal_frequency(
@@ -449,7 +460,7 @@ def peters_mathews_derivatives(
 
     n = np.asarray(mean_motion, dtype=np.float64)
     e = np.asarray(eccentricity, dtype=np.float64)
-    _validate_eccentricity(float(np.max(e)))
+    _validate_eccentricity(e)
     if np.any(n <= 0.0):
         raise ValueError("mean_motion must be positive")
 
@@ -467,8 +478,9 @@ def _peters_mathews_state_derivative(
     total_mass_kg: float,
     symmetric_mass_ratio: float,
 ) -> NDArray[np.float64]:
+    _validate_peters_mathews_state(state)
     n = state[0]
-    e = np.clip(state[1], 0.0, 1.0 - 1.0e-12)
+    e = state[1]
     ndot, edot = peters_mathews_derivatives(n, e, total_mass_kg, symmetric_mass_ratio)
     return np.array([float(ndot), float(edot), n], dtype=np.float64)
 
@@ -484,8 +496,7 @@ def _rk4_peters_mathews_step(
     k3 = _peters_mathews_state_derivative(state + 0.5 * dt * k2, total_mass_kg, symmetric_mass_ratio)
     k4 = _peters_mathews_state_derivative(state + dt * k3, total_mass_kg, symmetric_mass_ratio)
     next_state = state + dt * (k1 + 2.0 * k2 + 2.0 * k3 + k4) / 6.0
-    next_state[0] = max(next_state[0], np.finfo(np.float64).tiny)
-    next_state[1] = np.clip(next_state[1], 0.0, 1.0 - 1.0e-12)
+    _validate_peters_mathews_state(next_state)
     return next_state
 
 
@@ -537,8 +548,14 @@ def peters_mathews_evolution(
             if not solution.success:
                 raise RuntimeError(f"Peters-Mathews evolution failed: {solution.message}")
             values = solution.y[:, inverse]
+        try:
+            _validate_eccentricity(values[1])
+        except ValueError as exc:
+            raise RuntimeError("Peters-Mathews evolution left the physical eccentricity domain") from exc
+        if np.any(~np.isfinite(values[0])) or np.any(values[0] <= 0.0):
+            raise RuntimeError("Peters-Mathews evolution left the physical mean-motion domain")
         n_out[order] = values[0]
-        e_out[order] = np.clip(values[1], 0.0, 1.0 - 1.0e-12)
+        e_out[order] = values[1]
         l_out[order] = values[2]
 
     forward = np.nonzero(flat_times >= source.t0)[0]
