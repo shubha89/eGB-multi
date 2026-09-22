@@ -1,0 +1,23 @@
+{
+  "maximum_link_imaginary_component": 0.0,
+  "blocking_relative_l2": 0.0,
+  "dt5_vs_dt2p5_relative_l2_xyz": 0.11166584859877743,
+  "jaxgb_resolution": [
+    {
+      "frequency_hz": 0.001,
+      "relative_l2_common_bins": 0.014060468689891048,
+      "fine_power_outside_coarse_band_fraction": 0.00019807522915004402
+    },
+    {
+      "frequency_hz": 0.003,
+      "relative_l2_common_bins": 0.008706052089305952,
+      "fine_power_outside_coarse_band_fraction": 7.581682021188109e-05
+    },
+    {
+      "frequency_hz": 0.01,
+      "relative_l2_common_bins": 1.3219205639499014e-05,
+      "fine_power_outside_coarse_band_fraction": 1.7476128404150926e-10
+    }
+  ],
+  "scope": "Blocking and numerical-resolution checks only; no cross-model accuracy equivalence established."
+}

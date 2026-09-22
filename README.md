@@ -107,6 +107,33 @@ h = eccentric_complex_strain(
 If no `pm_switch_rule` is supplied, `evolution_mode="auto"` computes the
 fixed-vs-full-PM mismatch directly for that source and time grid.
 
+## Reusing TDI geometry
+
+For repeated GW-only evaluations on the same orbit and time grid, prepare the
+factorized pyTDI operators once:
+
+```python
+from egb_jax_eccentric import (
+    eccentric_links_jax, precompute_jax_link_geometry, prepare_xyz_from_links,
+)
+
+geometry = precompute_jax_link_geometry(state)
+tdi = prepare_xyz_from_links(state, generation=2)
+for source in sources:
+    links = eccentric_links_jax(source, geometry, batch_size=1)
+    xyz = tdi(links)
+```
+
+This caches nested delays and their Doppler factors; source-dependent
+measurement interpolation still runs for every call. Rebuild when the time
+grid, spacecraft positions, or interpolation settings change. Large grids
+require substantial cache memory; process sources on a shared block when
+working with long observations. This API is for GW-only links, not full
+instrument beatnotes. The ordinary `xyz_from_links` path also avoids
+interpolating zero reference/metrology channels.
+
+See [the measured TDI optimization results](benchmarks/results/tdi_optimization/REPORT.md).
+
 ## Tests
 
 ```bash

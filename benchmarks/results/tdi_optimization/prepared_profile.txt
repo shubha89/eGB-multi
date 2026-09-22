@@ -1,0 +1,33 @@
+         2714 function calls in 0.020 seconds
+
+   Ordered by: cumulative time
+   List reduced from 73 to 25 due to restriction <25>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.020    0.020 profile_tdi.py:43(<lambda>)
+        1    0.000    0.000    0.020    0.020 pytdi_bridge.py:195(evaluate_xyz)
+        3    0.000    0.000    0.020    0.007 pytdi_bridge.py:184(evaluate)
+       15    0.002    0.000    0.020    0.001 core.py:532(call)
+       36    0.009    0.000    0.018    0.001 dsp.py:100(timeshift)
+       18    0.004    0.000    0.004    0.000 dsp.py:243(lagrange_taps)
+       18    0.000    0.000    0.003    0.000 einsumfunc.py:1242(einsum)
+       18    0.003    0.000    0.003    0.000 {built-in method numpy._core._multiarray_umath.c_einsum}
+       54    0.001    0.000    0.001    0.000 {method 'astype' of 'numpy.ndarray' objects}
+       72    0.000    0.000    0.001    0.000 dsp.py:53(_as_floating_array)
+       18    0.000    0.000    0.000    0.000 _arraypad_impl.py:546(pad)
+       18    0.000    0.000    0.000    0.000 {built-in method numpy.zeros}
+       36    0.000    0.000    0.000    0.000 fromnumeric.py:48(_wrapfunc)
+       18    0.000    0.000    0.000    0.000 fromnumeric.py:2245(clip)
+       18    0.000    0.000    0.000    0.000 {method 'clip' of 'numpy.ndarray' objects}
+       18    0.000    0.000    0.000    0.000 _methods.py:96(_clip)
+       18    0.000    0.000    0.000    0.000 _arraypad_impl.py:87(_pad_simple)
+       18    0.000    0.000    0.000    0.000 _stride_tricks_impl.py:177(sliding_window_view)
+       18    0.000    0.000    0.000    0.000 {built-in method numpy.arange}
+       18    0.000    0.000    0.000    0.000 numeric.py:170(ones)
+       36    0.000    0.000    0.000    0.000 _arraypad_impl.py:471(_as_pairs)
+       54    0.000    0.000    0.000    0.000 fromnumeric.py:86(_wrapreduction_any_all)
+       72    0.000    0.000    0.000    0.000 numerictypes.py:418(issubdtype)
+       18    0.000    0.000    0.000    0.000 _stride_tricks_impl.py:38(as_strided)
+       36    0.000    0.000    0.000    0.000 fromnumeric.py:2586(all)
+
+

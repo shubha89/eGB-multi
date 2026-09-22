@@ -1,0 +1,28 @@
+/Users/shubhanshutiwari/Desktop/eGB-multi/.venv-benchmark/lib/python3.12/site-packages/lisaconstants/compat/astropy.py:252: UserWarning: The following constants differ between lisaconstants and the version of astropy you have installed: VACUUM_PERMEABILITY. The recommended version of astropy is 7.2.0. Use a different one at your own risks. 
+You may also open an issue at https://gitlab.esa.int/lisa-sgs/commons/lisa-constants to warn that lisaconstants is not compatible with astropy v8.0.1
+  warnings.warn(
+/Users/shubhanshutiwari/Desktop/eGB-multi/.venv-benchmark/lib/python3.12/site-packages/pytdi/dsp.py:72: ComplexWarning: Casting complex values to real discards the imaginary part
+  return data.astype(float)
+{
+  "maximum_link_imaginary_component": 0.0,
+  "blocking_relative_l2": 0.0,
+  "dt5_vs_dt2p5_relative_l2_xyz": 0.11166584859877743,
+  "jaxgb_resolution": [
+    {
+      "frequency_hz": 0.001,
+      "relative_l2_common_bins": 0.014060468689891048,
+      "fine_power_outside_coarse_band_fraction": 0.00019807522915004402
+    },
+    {
+      "frequency_hz": 0.003,
+      "relative_l2_common_bins": 0.008706052089305952,
+      "fine_power_outside_coarse_band_fraction": 7.581682021188109e-05
+    },
+    {
+      "frequency_hz": 0.01,
+      "relative_l2_common_bins": 1.3219205639499014e-05,
+      "fine_power_outside_coarse_band_fraction": 1.7476128404150926e-10
+    }
+  ],
+  "scope": "Blocking and numerical-resolution checks only; no cross-model accuracy equivalence established."
+}

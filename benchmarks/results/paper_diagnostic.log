@@ -1,0 +1,106 @@
+/Users/shubhanshutiwari/Desktop/eGB-multi/.venv-benchmark/lib/python3.12/site-packages/lisaconstants/compat/astropy.py:252: UserWarning: The following constants differ between lisaconstants and the version of astropy you have installed: VACUUM_PERMEABILITY. The recommended version of astropy is 7.2.0. Use a different one at your own risks. 
+You may also open an issue at https://gitlab.esa.int/lisa-sgs/commons/lisa-constants to warn that lisaconstants is not compatible with astropy v8.0.1
+  warnings.warn(
+/Users/shubhanshutiwari/Desktop/eGB-multi/.venv-benchmark/lib/python3.12/site-packages/pytdi/dsp.py:72: ComplexWarning: Casting complex values to real discards the imaginary part
+  return data.astype(float)
+{
+  "duration_s": 31557600,
+  "dt_s": 50,
+  "samples": 631152,
+  "frequency_hz": 0.001,
+  "eccentricity": 0.3,
+  "geometry_setup_s": 0.3112529999925755,
+  "egb_cached_geometry": [
+    {
+      "cold": true,
+      "links_s": 0.5609703750233166,
+      "tdi_s": 1.2947805000003427,
+      "total_s": 1.8557508750236593
+    },
+    {
+      "cold": false,
+      "links_s": 0.1787611250183545,
+      "tdi_s": 1.2472424170118757,
+      "total_s": 1.4260035420302302
+    },
+    {
+      "cold": false,
+      "links_s": 0.16376662498805672,
+      "tdi_s": 1.2533233339781873,
+      "total_s": 1.417089958966244
+    },
+    {
+      "cold": false,
+      "links_s": 0.17622224998194724,
+      "tdi_s": 1.2194385000038892,
+      "total_s": 1.3956607499858364
+    }
+  ],
+  "jaxgbaccurate": [
+    {
+      "n": 2048,
+      "jit": false,
+      "warm_s": [
+        0.00442254199879244,
+        0.0037007079808972776,
+        0.0032313750125467777,
+        0.0029537079972214997,
+        0.002909500035457313,
+        0.003012417000718415,
+        0.002902124950196594,
+        0.0031214579939842224,
+        0.0029081659740768373,
+        0.00290395796764642
+      ]
+    },
+    {
+      "n": 2048,
+      "jit": true,
+      "warm_s": [
+        0.0003700000233948231,
+        0.00035687495255842805,
+        0.0003642920055426657,
+        0.00033779203658923507,
+        0.00034904200583696365,
+        0.000353958981577307,
+        0.00035079201916232705,
+        0.00035562500124797225,
+        0.0003417079569771886,
+        0.00035920896334573627
+      ]
+    },
+    {
+      "n": 4096,
+      "jit": false,
+      "warm_s": [
+        0.0037527920212596655,
+        0.004127083986531943,
+        0.0033199579920619726,
+        0.0032718749716877937,
+        0.003253249975387007,
+        0.003150916949380189,
+        0.0038149579777382314,
+        0.0031453330302610993,
+        0.0030853330390527844,
+        0.0030203749774955213
+      ]
+    },
+    {
+      "n": 4096,
+      "jit": true,
+      "warm_s": [
+        0.0006399169797077775,
+        0.0006369590410031378,
+        0.0006650829454883933,
+        0.0006608330295421183,
+        0.0006391669739969075,
+        0.0006345830042846501,
+        0.000642542028799653,
+        0.0006417499971576035,
+        0.0006700839730910957,
+        0.0006380410050041974
+      ]
+    }
+  ],
+  "limitation": "Diagnostic, not reproduction of Fig.8; its timing-specific sample count and timing boundaries are unknown."
+}
