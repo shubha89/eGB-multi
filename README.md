@@ -134,6 +134,11 @@ interpolating zero reference/metrology channels.
 
 See [the measured TDI optimization results](benchmarks/results/tdi_optimization/REPORT.md).
 
+Examples: [minimal prepared waveform](notebooks/minimal_prepared_xyz.ipynb)
+and [one year with shared block caches](notebooks/one_year_prepared_xyz.ipynb).
+The one-year example retains two independent XYZ waveforms and reports shared
+preparation separately from waveform evaluation.
+
 ## Tests
 
 ```bash
