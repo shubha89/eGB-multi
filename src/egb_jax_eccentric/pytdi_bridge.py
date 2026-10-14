@@ -37,12 +37,17 @@ def pytdi_data_from_links(
     links: dict[str, NDArray[np.complex128]],
     *,
     compute_delay_derivatives: bool = True,
+    link_delays: dict[str, NDArray[np.float64]] | None = None,
 ):
     """Create a `pytdi.Data` object from six GW-only link responses.
 
     The link responses are assigned to `sci_ij`. Local metrology/reference
     measurements are set to zero, so pyTDI's intermediate variables reduce to
     the supplied GW link content.
+    Explicit link_delays (seconds, receiver/emitter labels ij) must match
+    the response geometry. They avoid substituting instantaneous arms for
+    native retarded light travel times. This is a GW-only adapter; instrument
+    noise also requires SCI/TMI/REF, supplied by the noise module's adapter.
     """
 
     try:
@@ -64,7 +69,11 @@ def pytdi_data_from_links(
 
     delays = {}
     for label, (sender, receiver) in zip(LINK_LABELS, LINKS, strict=True):
-        delays[f"d_{label}"] = state.arm_length(sender, receiver)
+        value = state.arm_length(sender, receiver) if link_delays is None else np.asarray(link_delays[label], dtype=np.float64)
+        invalid_sign = np.any(value < 0.0) or (link_delays is not None and np.any(value == 0.0))
+        if value.shape != (state.t.size,) or np.any(~np.isfinite(value)) or invalid_sign:
+            raise ValueError(f"invalid light travel times for link {label}")
+        delays[f"d_{label}"] = value
 
     data = Data(measurements, delays, _sampling_frequency(state.t))
     if compute_delay_derivatives:
@@ -79,6 +88,7 @@ def xyz_from_links(
     generation: int = 1,
     measurement_order: int = 3,
     delay_order: int = 3,
+    link_delays: dict[str, NDArray[np.float64]] | None = None,
 ) -> dict[str, NDArray[np.complex128]]:
     """Compute pyTDI Michelson X/Y/Z from six GW-only link responses.
 
@@ -86,19 +96,33 @@ def xyz_from_links(
     Pass these intermediates directly to avoid interpolating zero channels.
     """
 
+    data = pytdi_data_from_links(state, links, link_delays=link_delays)
+    etas = {f"eta_{label}": data.measurements[f"sci_{label}"] for label in LINK_LABELS}
+    return xyz_from_pytdi_data(data, generation=generation, order=measurement_order,
+                              delay_order=delay_order, etas=etas)
+
+
+def xyz_from_pytdi_data(data, *, generation: int = 2, order: int = 45,
+                      delay_order: int = 5, etas=None) -> dict[str, NDArray]:
+    """Compute Doppler-frequency Michelson XYZ, retaining the input units.
+
+    Instrument streams in Hz produce XYZ in Hz; GW fractional-frequency
+    streams remain dimensionless. Order 45 is the tested high-order setting
+    for synthetic laser-noise diagnostics, not an arbitrary-band guarantee.
+    Leave etas unset for full instrument SCI/TMI/REF data. GW-only callers
+    may supply eta=sci to avoid interpolating identically zero local streams.
+    """
     try:
         from pytdi.michelson import compute_factorized_michelson
     except ImportError as exc:
-        raise ImportError("pytdi is required for xyz_from_links") from exc
+        raise ImportError("pytdi is required for xyz_from_pytdi_data") from exc
 
-    data = pytdi_data_from_links(state, links)
-    etas = {f"eta_{label}": data.measurements[f"sci_{label}"] for label in LINK_LABELS}
     return {
         "X": compute_factorized_michelson(
             data,
             etas=etas,
             rot=0,
-            order=measurement_order,
+            order=order,
             delay_order=delay_order,
             generation=generation,
             unit="frequency",
@@ -107,7 +131,7 @@ def xyz_from_links(
             data,
             etas=etas,
             rot=1,
-            order=measurement_order,
+            order=order,
             delay_order=delay_order,
             generation=generation,
             unit="frequency",
@@ -116,7 +140,7 @@ def xyz_from_links(
             data,
             etas=etas,
             rot=2,
-            order=measurement_order,
+            order=order,
             delay_order=delay_order,
             generation=generation,
             unit="frequency",
@@ -130,6 +154,7 @@ def prepare_xyz_from_links(
     generation: int = 1,
     measurement_order: int = 3,
     delay_order: int = 3,
+    link_delays: dict[str, NDArray[np.float64]] | None = None,
 ) -> Callable[[dict[str, NDArray]], dict[str, NDArray]]:
     """Prepare reusable pyTDI XYZ operators for a fixed time grid and orbit.
 
@@ -144,6 +169,8 @@ def prepare_xyz_from_links(
     change. Cache per block for large datasets: stored delay arrays use memory
     proportional to the number of samples. The callable does not cache source
     links and can be reused as source parameters change.
+    For native retarded link geometry, supply its receiver/emitter light
+    travel times in link_delays, matching the link-response geometry.
     """
     from pytdi.core import LISATDICombination
 
@@ -154,7 +181,8 @@ def prepare_xyz_from_links(
             raise ValueError(f"{name} must be a positive odd integer")
     size = state.t.size
     zeros = np.zeros(size)
-    data = pytdi_data_from_links(state, dict.fromkeys(LINK_LABELS, zeros))
+    data = pytdi_data_from_links(state, dict.fromkeys(LINK_LABELS, zeros),
+                               link_delays=link_delays)
 
     def build(components):
         return LISATDICombination(components).build(**data.args, order=delay_order)
@@ -230,11 +258,19 @@ def eccentric_xyz_jax(
     generation: int = 1,
     measurement_order: int = 3,
     delay_order: int = 3,
+    orbits=None,
+    frame: str = "ecliptic",
 ) -> dict[str, NDArray[np.complex128]]:
-    """Compute JAX eccentric links and route them through pyTDI Michelson XYZ."""
+    """Compute JAX links and XYZ using one common set of light travel times.
 
+    Pass orbits for native retarded geometry, or precompute that geometry
+    explicitly. The state/source frame must agree with frame.
+    """
+
+    if geometry is not None and orbits is not None:
+        raise ValueError("supply either geometry or orbits, not both")
     if geometry is None:
-        geometry = precompute_jax_link_geometry(state)
+        geometry = precompute_jax_link_geometry(state, orbits=orbits, frame=frame)
     links = eccentric_links_jax(
         sources,
         geometry,
@@ -247,6 +283,7 @@ def eccentric_xyz_jax(
         generation=generation,
         measurement_order=measurement_order,
         delay_order=delay_order,
+        link_delays={label: geometry["length"][index] for index, label in enumerate(LINK_LABELS)},
     )
 
 

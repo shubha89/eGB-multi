@@ -1,0 +1,539 @@
+{
+  "merge_parents": [
+    "e5fae4c5971d00c13600a39e635728ce41d1622e",
+    "6b83fe7"
+  ],
+  "tests": {
+    "passed": 248,
+    "skipped": 0,
+    "elapsed_s": 35.17,
+    "python": "/opt/miniconda3/bin/python"
+  },
+  "frozen_task_2_8_hash_errors": [],
+  "canonical_numerical_source_changes": [],
+  "benchmark_configuration_identical_to_saved_main": true,
+  "benchmark_repeat_summary": [
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "previous_original_median_s": 16.380964162992314,
+      "previous_improved_median_s": 12.05877999420045,
+      "previous_prepared_median_s": 3.745898747991305,
+      "current_original_median_s": 22.0196017511189,
+      "current_improved_median_s": 17.33270021271892,
+      "current_prepared_median_s": 4.154860205249861,
+      "current_prepared_speedup": 5.299721449904885
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "previous_original_median_s": 16.400560916750692,
+      "previous_improved_median_s": 12.16945987479994,
+      "previous_prepared_median_s": 3.8606544969952665,
+      "current_original_median_s": 22.32490179222077,
+      "current_improved_median_s": 17.766829835250974,
+      "current_prepared_median_s": 4.38706324971281,
+      "current_prepared_speedup": 5.088803265756933
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "previous_original_median_s": 16.44288558216067,
+      "previous_improved_median_s": 12.236765087000094,
+      "previous_prepared_median_s": 3.9259590850560926,
+      "current_original_median_s": 22.63867562264204,
+      "current_improved_median_s": 17.732457339996472,
+      "current_prepared_median_s": 4.34740891540423,
+      "current_prepared_speedup": 5.207395039934276
+    }
+  ],
+  "current_shared_setup_s": 13.459416956175119,
+  "previous_shared_setup_s": 8.287793671654072,
+  "max_current_XYZ_relative_L2_difference": 0.0,
+  "benchmark_source_sha256": {
+    "src/egb_jax_eccentric/pytdi_bridge.py": "0c5486112037ee219de879e510d34102f663b2c300a02e5a6425b1c9b7166ae4",
+    "src/egb_jax_eccentric/__init__.py": "3657c1a4611322838775444dbfe7a428a3a1d5d5b2f4c30c0182574f53aa9762",
+    "tests/test_legacy_lisa_conventions.py": "1a7bb18e325fb64dfa3043f53f626de41a7f9b179130d0722b58503fc5e88041",
+    "tests/test_prepared_pytdi.py": "aab893e1779a40b286baa95588dbc3496bec6f6d498337905ed5cd19828b1fde"
+  },
+  "raw_benchmark": {
+    "config": {
+      "cases": [
+        [
+          0.001,
+          0.0
+        ],
+        [
+          0.003,
+          0.3
+        ],
+        [
+          0.01,
+          0.6
+        ]
+      ],
+      "days": 365.25,
+      "samples": 6311520,
+      "dt_s": 5.0,
+      "block_samples": 65536,
+      "halo_samples": 128,
+      "blocks": 97,
+      "repeats": 3,
+      "generation": 2,
+      "measurement_order": 3,
+      "delay_order": 3,
+      "physics": "1pn_periastron",
+      "fdot": 0.0,
+      "masses_solar": [
+        0.6,
+        0.4
+      ],
+      "batch_size": 1,
+      "seed": 20260921
+    },
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "cpu_count": 10,
+    "devices": [
+      "cpu:0"
+    ],
+    "versions": {
+      "jax": "0.11.2",
+      "jaxlib": "0.11.2",
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "pytdi": "2.2.1",
+      "lisaorbits": "3.1.0"
+    },
+    "source_hashes": {
+      "src/egb_jax_eccentric/pytdi_bridge.py": "0c5486112037ee219de879e510d34102f663b2c300a02e5a6425b1c9b7166ae4",
+      "src/egb_jax_eccentric/eccentric_jax.py": "62974e2fb0969368ddc7926701ea147fb2433f3eabb48cc3256dad2396052ec9",
+      "benchmarks/compare_pipeline_optimizations.py": "34f5c915c2292b4f3df226265d0b1bda285e752df50e6541af8d29697b5aa465"
+    },
+    "timing_boundary": "Sum of full geometry/links/XYZ block-call wall intervals. Prepared calls exclude cached setup. Checks, imports, JIT warmup and JSON I/O excluded.",
+    "cache_scope": "One block reused across all cases and repeats, then released; no whole-year-cache assumption.",
+    "rows": [
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 0,
+        "mode": "original",
+        "geometry_s": 5.669733787653968,
+        "links_s": 1.8737891241908073,
+        "tdi_s": 14.475995709188282,
+        "total_s": 22.0196017511189
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 0,
+        "mode": "improved",
+        "geometry_s": 5.671597464475781,
+        "links_s": 1.8625263692811131,
+        "tdi_s": 9.624902002047747,
+        "total_s": 17.159111376618966
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 0,
+        "mode": "prepared",
+        "geometry_s": 0.0,
+        "links_s": 1.8557702489197254,
+        "tdi_s": 2.2256195021327585,
+        "total_s": 4.081492122029886
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 1,
+        "mode": "original",
+        "geometry_s": 5.710776293417439,
+        "links_s": 1.8774354157503694,
+        "tdi_s": 14.400555704021826,
+        "total_s": 21.98885525413789
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 1,
+        "mode": "improved",
+        "geometry_s": 5.70411141961813,
+        "links_s": 1.8806821638718247,
+        "tdi_s": 9.74781887489371,
+        "total_s": 17.33270021271892
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 1,
+        "mode": "prepared",
+        "geometry_s": 0.0,
+        "links_s": 1.8911908729933202,
+        "tdi_s": 2.2635803383309394,
+        "total_s": 4.154860205249861
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 2,
+        "mode": "original",
+        "geometry_s": 5.838419705629349,
+        "links_s": 1.9632764998823404,
+        "tdi_s": 14.856994243571535,
+        "total_s": 22.658778495853767
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 2,
+        "mode": "improved",
+        "geometry_s": 5.690448169363663,
+        "links_s": 1.9540337871294469,
+        "tdi_s": 9.774523583706468,
+        "total_s": 17.419093255884945
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 2,
+        "mode": "prepared",
+        "geometry_s": 0.0,
+        "links_s": 1.9004499488510191,
+        "tdi_s": 2.3495985919144005,
+        "total_s": 4.2501359595917165
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 0,
+        "mode": "original",
+        "geometry_s": 5.646312540164217,
+        "links_s": 2.044866164913401,
+        "tdi_s": 14.633638288360089,
+        "total_s": 22.32490179222077
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 0,
+        "mode": "improved",
+        "geometry_s": 5.646977422526106,
+        "links_s": 2.0286538389045745,
+        "tdi_s": 10.091113867703825,
+        "total_s": 17.766829835250974
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 0,
+        "mode": "prepared",
+        "geometry_s": 0.0,
+        "links_s": 2.0916345848236233,
+        "tdi_s": 2.265270707430318,
+        "total_s": 4.356995333684608
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 1,
+        "mode": "original",
+        "geometry_s": 5.688276825007051,
+        "links_s": 2.0946546313352883,
+        "tdi_s": 14.53416555118747,
+        "total_s": 22.317180659156293
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 1,
+        "mode": "improved",
+        "geometry_s": 5.619270037859678,
+        "links_s": 2.0329570460598916,
+        "tdi_s": 9.903632422210649,
+        "total_s": 17.555941874859855
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 1,
+        "mode": "prepared",
+        "geometry_s": 0.0,
+        "links_s": 2.0790712446905673,
+        "tdi_s": 2.3078997938428074,
+        "total_s": 4.38706324971281
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 2,
+        "mode": "original",
+        "geometry_s": 5.769875587895513,
+        "links_s": 2.087605241453275,
+        "tdi_s": 14.836281870258972,
+        "total_s": 22.693848917726427
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 2,
+        "mode": "improved",
+        "geometry_s": 5.766830874606967,
+        "links_s": 2.0745039985049516,
+        "tdi_s": 10.12291912548244,
+        "total_s": 17.964339955709875
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 2,
+        "mode": "prepared",
+        "geometry_s": 0.0,
+        "links_s": 2.1203036257065833,
+        "tdi_s": 2.359754623612389,
+        "total_s": 4.480151342228055
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 0,
+        "mode": "original",
+        "geometry_s": 5.759201206499711,
+        "links_s": 2.2106746304780245,
+        "tdi_s": 14.668719164794311,
+        "total_s": 22.63867562264204
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 0,
+        "mode": "improved",
+        "geometry_s": 5.653346960898489,
+        "links_s": 2.1851411240641028,
+        "tdi_s": 9.893884084187448,
+        "total_s": 17.732457339996472
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 0,
+        "mode": "prepared",
+        "geometry_s": 0.0,
+        "links_s": 2.1872845818288624,
+        "tdi_s": 2.2506805390585214,
+        "total_s": 4.4380692567210644
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 1,
+        "mode": "original",
+        "geometry_s": 5.655045038787648,
+        "links_s": 2.242428122786805,
+        "tdi_s": 15.35410850145854,
+        "total_s": 23.251661706715822
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 1,
+        "mode": "improved",
+        "geometry_s": 5.584509965963662,
+        "links_s": 2.131311383098364,
+        "tdi_s": 9.798361376626417,
+        "total_s": 17.514262962620705
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 1,
+        "mode": "prepared",
+        "geometry_s": 0.0,
+        "links_s": 2.112233880907297,
+        "tdi_s": 2.2284968306776136,
+        "total_s": 4.340830998960882
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 2,
+        "mode": "original",
+        "geometry_s": 5.5938149995636195,
+        "links_s": 2.0884723253548145,
+        "tdi_s": 14.190886997617781,
+        "total_s": 21.87325750151649
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 2,
+        "mode": "improved",
+        "geometry_s": 5.814265665831044,
+        "links_s": 2.204219249775633,
+        "tdi_s": 9.961979792453349,
+        "total_s": 17.980572912609205
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 2,
+        "mode": "prepared",
+        "geometry_s": 0.0,
+        "links_s": 2.122883999720216,
+        "tdi_s": 2.2244264581240714,
+        "total_s": 4.34740891540423
+      }
+    ],
+    "first_block_warmup_s": {
+      "original": [
+        0.05586525006219745,
+        0.3950406250078231,
+        0.15060279099270701,
+        0.6015097911003977
+      ],
+      "improved": [
+        0.0569287920370698,
+        0.019613583106547594,
+        0.11422874988056719,
+        0.1907728749793023
+      ],
+      "prepared": [
+        0.0,
+        0.0219329169485718,
+        0.029516249895095825,
+        0.05145033309236169
+      ]
+    },
+    "completed_blocks": 97,
+    "cached_geometry_setup_s": 5.743302745046094,
+    "prepared_tdi_setup_s": 7.716114211129025,
+    "validation": [
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 0,
+        "mode": "improved",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 0,
+        "mode": "prepared",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 1,
+        "mode": "improved",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 1,
+        "mode": "prepared",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 2,
+        "mode": "improved",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.001,
+        "eccentricity": 0.0,
+        "repeat": 2,
+        "mode": "prepared",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 0,
+        "mode": "improved",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 0,
+        "mode": "prepared",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 1,
+        "mode": "improved",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 1,
+        "mode": "prepared",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 2,
+        "mode": "improved",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.003,
+        "eccentricity": 0.3,
+        "repeat": 2,
+        "mode": "prepared",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 0,
+        "mode": "improved",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 0,
+        "mode": "prepared",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 1,
+        "mode": "improved",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 1,
+        "mode": "prepared",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 2,
+        "mode": "improved",
+        "relative_l2_xyz": 0.0
+      },
+      {
+        "frequency_hz": 0.01,
+        "eccentricity": 0.6,
+        "repeat": 2,
+        "mode": "prepared",
+        "relative_l2_xyz": 0.0
+      }
+    ]
+  },
+  "interpretation": "Prepared full-year source generation only, fixed 1PN, 5 s cadence, order 3/3. Warm timing excludes geometry/TDI setup and JIT compilation. Not a fitting-factor search or Euler performance measurement."
+}

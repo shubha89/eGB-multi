@@ -1,105 +1,80 @@
 # eGB-multi
 
-Standalone JAX eccentric compact-binary response model with switchable source
-physics and pyTDI helpers.
+Eccentric Galactic-binary source models, retarded LISA links, TDI responses,
+and noise-weighted circular-template comparisons. This checkout contains the
+current referee-development implementation and its reproduction scripts.
 
-This repo focuses on:
+`egb_multi` is the canonical package. Existing `egb_jax_eccentric` imports use
+the same core source and geometry implementation, with the legacy XYZ/AET
+convenience API retained. See [the update and validation guide](docs/referee_development_update.md)
+for convention corrections, ideal-clock/ranging laser tests, frozen input
+data, and the scope of the remaining instrument arithmetic repair.
 
-- switchable eccentric source physics: `newtonian`, `1pn_no_periastron`, `1pn_periastron`,
-- separate fixed and Peters-Mathews source evolution modes,
-- batched JAX source strain and six-link LISA response generation,
-- optional interpolation and harmonic-carrier link paths,
-- pyTDI conversion from six GW-only links to Michelson `X/Y/Z`,
-- orthogonal `A/E/T` conversion.
+The package also includes experiments for the triliear LISA response formalism
+in Andersson et al., EPL 140, 19001 (2022).
 
-The circular trilinear tensor and FastGB benchmarking code are intentionally not
-included here.
+The current implementation is intentionally small:
 
-## Install
+- second-order eccentric guiding-center LISA orbit approximation,
+- adapters for `lisaorbits` and `fastgb`,
+- arm lengths and unit arm vectors,
+- trace-free polarization matrix parameterization,
+- exact one-way Doppler response from Eq. (6),
+- triliear response tensor from Eqs. (11)-(14).
+- vectorized triliear source batches for multi-source timing experiments.
+- exact six-link GW responses that can be passed through pyTDI to compute
+  time-domain Michelson X/Y/Z or A/E/T.
+- beta-expanded six-link GW responses with `order`, `retarded_geometry`, and
+  `barycentric_phase` options, also routed through pyTDI for X/Y/Z comparisons.
+  The default `compute_triliear_xyz` path uses `order=1`,
+  `barycentric_phase=True`, and pyTDI interpolation order 3.
+- eccentric source generation keeps secular evolution and source physics as
+  separate API axes:
+  `evolution_mode="fixed"` holds source parameters fixed, while
+  `evolution_mode="peters_mathews"` (`"pm"` alias) evolves radial mean motion,
+  eccentricity, and mean anomaly with Peters-Mathews radiation reaction. The
+  partial diagnostics `peters_mathews_orbital_only` and
+  `peters_mathews_eccentricity_only` isolate the two secular pieces.
+  `evolution_mode="auto"` selects between the fixed and Peters-Mathews paths
+  using a user-specified fixed-1PN-vs-full-PM source mismatch tolerance. Pass a
+  precomputed `PetersMathewsSwitchRule` for fast calibrated switching, or omit
+  the rule to compute the source-level mismatch directly for that waveform.
+  `physics_mode="newtonian"` uses Newtonian orbital dynamics,
+  `physics_mode="1pn_no_periastron"` adds the explicit 1PN orbital corrections
+  without apsidal precession, and `physics_mode="1pn_periastron"` (also accepted
+  as the historical `"1pn"`) adds both 1PN orbital terms and periastron advance.
 
-```bash
-python -m pip install -e ".[test,orbits]"
-```
+LISA geometry distances are represented as light-travel times. Source
+luminosity distances are represented in meters, and frequencies are in Hz.
 
-Or create the documented Conda environment:
-
-```bash
-conda env create -f environment.yml
-conda activate egb-multi
-```
-OR simply ask your AI agent to install this ;) 
-
-## Minimal Use
+For example, the current full eccentric source model is selected by combining
+the two axes explicitly:
 
 ```python
-import numpy as np
-
-from egb_jax_eccentric import (
-    EccentricBinaryParams,
-    eccentric_xyz_jax,
-    lisa_orbit,
-)
-
-times = np.arange(512.0)
-state = lisa_orbit(times)
-source = EccentricBinaryParams(
-    mean_motion=np.pi * 1.0e-4,
-    eccentricity=0.05,
-    beta=0.2,
-    lambda_=0.4,
-    psi=0.3,
-    inclination=0.8,
-)
-
-xyz = eccentric_xyz_jax(
-    state,
+eccentric_complex_strain(
     source,
-    batch_size=1,
+    times,
     physics_mode="1pn_periastron",
+    evolution_mode="peters_mathews",
 )
-print({channel: value.shape for channel, value in xyz.items()})
 ```
 
-## Physics And Evolution Switches
-
-Use `physics_mode` to control source physics in the NumPy and JAX exact-link
-paths:
-
-- `newtonian`: Newtonian orbital dynamics, no periastron advance.
-- `1pn_no_periastron`: 1PN orbital corrections without periastron advance.
-- `1pn_periastron`: 1PN orbital corrections with periastron advance. The
-  historical `1pn` spelling is still accepted as an alias.
-
-Use `evolution_mode` in the NumPy source generator to control secular
-evolution:
-
-- `fixed`: hold the source parameters fixed.
-- `peters_mathews` or `pm`: evolve radial mean motion, eccentricity, and mean
-  anomaly with Peters-Mathews radiation reaction.
-- `peters_mathews_orbital_only` and `peters_mathews_eccentricity_only`: partial
-  diagnostics that isolate the two secular pieces.
-- `auto` or `adaptive`: compare against `1pn` plus full Peters-Mathews
-  evolution and switch from `fixed` to `peters_mathews` once the requested
-  source-level mismatch tolerance is reached.
-
-For survey runs, calibrate the automatic switch on a representative grid once,
-then reuse the rule:
+The automatic Peters-Mathews switch can be calibrated on a sparse source grid
+and then reused:
 
 ```python
-from egb_jax_eccentric import calibrate_peters_mathews_switch_rule, eccentric_complex_strain
-
 rule = calibrate_peters_mathews_switch_rule(
     calibration_sources,
     calibration_times,
-    mismatch_tolerance=1.0e-2,
+    mismatch_tolerance=1e-2,
 )
 
-h = eccentric_complex_strain(
+eccentric_complex_strain(
     source,
     times,
     physics_mode="1pn_periastron",
     evolution_mode="auto",
-    pm_mismatch_tolerance=1.0e-2,
+    pm_mismatch_tolerance=1e-2,
     pm_switch_rule=rule,
 )
 ```
@@ -139,16 +114,45 @@ and [one year with shared block caches](notebooks/one_year_prepared_xyz.ipynb).
 The one-year example retains two independent XYZ waveforms and reports shared
 preparation separately from waveform evaluation.
 
+For native retarded geometry, prepare the operators with those same delays:
+
+```python
+from egb_jax_eccentric import LINK_LABELS
+
+geometry = precompute_jax_link_geometry(state, orbits=orbit)
+delays = {label: geometry["length"][i] for i, label in enumerate(LINK_LABELS)}
+tdi = prepare_xyz_from_links(state, generation=2, link_delays=delays)
+links = eccentric_links_jax(source, geometry, batch_size=1)
+xyz = tdi(links)
+```
+
+The GW-only shortcut applies to source links. Full instrument noise retains
+the SCI/TMI/REF construction documented in the referee-development note.
+
 ## Tests
 
 ```bash
 python -m pytest
 ```
 
-## Notebook
-
-Open the switchable eccentric model example with:
+Optional realistic backends:
 
 ```bash
-jupyter lab notebooks/eccentric_pytdi_switches.ipynb
+python -m pip install -e ".[realistic,test]"
+python benchmarks/fastgb_walltime.py
+python benchmarks/beta_walltime_options.py
+python benchmarks/fastgb_accuracy.py
+python benchmarks/time_domain_reference.py
 ```
+
+The benchmark currently compares runtime and output scales for the same
+non-eccentric galactic-binary parameters. It is not yet a residual validation,
+because FastGB returns standard TDI `X/Y/Z` frequency-domain observables while
+the triliear implementation currently returns the paper's TDI-like pair
+channels.
+
+For `default_lisaorbits("esa-trailing")`, this repository uses the bundled
+`lisaorbits.KeplerianOrbits` unequal-arm trailing analytic model. The installed
+FastGB backend accepts this orbit object but reduces it to a single scalar
+`arm_length` internally, so its frequency-domain output should not be treated as
+a native unequal-arm response.

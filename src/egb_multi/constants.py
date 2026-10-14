@@ -1,0 +1,16 @@
+"""Physical constants used by the numerical experiments."""
+
+import numpy as np
+
+C_M_PER_S = 299_792_458.0
+G_M3_KG_S2 = 6.67430e-11
+SOLAR_MASS_KG = 1.98847e30
+AU_M = 149_597_870_700.0
+PARSEC_M = 3.085677581491367e16
+JULIAN_YEAR_S = 365.25 * 24.0 * 3600.0
+LISA_ARM_M = 2.5e9
+
+AU_LIGHT_S = AU_M / C_M_PER_S
+KILOPARSEC_M = 1.0e3 * PARSEC_M
+LISA_ARM_LIGHT_S = LISA_ARM_M / C_M_PER_S
+YEAR_ANGULAR_FREQUENCY = 2.0 * np.pi / JULIAN_YEAR_S

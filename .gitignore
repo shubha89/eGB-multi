@@ -10,3 +10,6 @@ dist/
 .venv/
 .venv-benchmark/
 venv/
+outputs/
+tmp/
+.codex-worktrees/
