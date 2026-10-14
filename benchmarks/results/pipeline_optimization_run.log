@@ -1,0 +1,17 @@
+/Users/shubhanshutiwari/Desktop/eGB-multi/.venv-benchmark/lib/python3.12/site-packages/lisaconstants/compat/astropy.py:252: UserWarning: The following constants differ between lisaconstants and the version of astropy you have installed: VACUUM_PERMEABILITY. The recommended version of astropy is 7.2.0. Use a different one at your own risks. 
+You may also open an issue at https://gitlab.esa.int/lisa-sgs/commons/lisa-constants to warn that lisaconstants is not compatible with astropy v8.0.1
+  warnings.warn(
+/Users/shubhanshutiwari/Desktop/eGB-multi/.venv-benchmark/lib/python3.12/site-packages/pytdi/dsp.py:72: ComplexWarning: Casting complex values to real discards the imaginary part
+  return data.astype(float)
+Warmup complete; starting full-year block sweep.
+Completed 10/97 full-year blocks across all methods/cases/repeats.
+Completed 20/97 full-year blocks across all methods/cases/repeats.
+Completed 30/97 full-year blocks across all methods/cases/repeats.
+Completed 40/97 full-year blocks across all methods/cases/repeats.
+Completed 50/97 full-year blocks across all methods/cases/repeats.
+Completed 60/97 full-year blocks across all methods/cases/repeats.
+Completed 70/97 full-year blocks across all methods/cases/repeats.
+Completed 80/97 full-year blocks across all methods/cases/repeats.
+Completed 90/97 full-year blocks across all methods/cases/repeats.
+Completed 97/97 full-year blocks across all methods/cases/repeats.
+DONE

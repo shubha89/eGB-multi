@@ -79,6 +79,58 @@ eccentric_complex_strain(
 )
 ```
 
+If no `pm_switch_rule` is supplied, `evolution_mode="auto"` computes the
+fixed-vs-full-PM mismatch directly for that source and time grid.
+
+## Reusing TDI geometry
+
+For repeated GW-only evaluations on the same orbit and time grid, prepare the
+factorized pyTDI operators once:
+
+```python
+from egb_jax_eccentric import (
+    eccentric_links_jax, precompute_jax_link_geometry, prepare_xyz_from_links,
+)
+
+geometry = precompute_jax_link_geometry(state)
+tdi = prepare_xyz_from_links(state, generation=2)
+for source in sources:
+    links = eccentric_links_jax(source, geometry, batch_size=1)
+    xyz = tdi(links)
+```
+
+This caches nested delays and their Doppler factors; source-dependent
+measurement interpolation still runs for every call. Rebuild when the time
+grid, spacecraft positions, or interpolation settings change. Large grids
+require substantial cache memory; process sources on a shared block when
+working with long observations. This API is for GW-only links, not full
+instrument beatnotes. The ordinary `xyz_from_links` path also avoids
+interpolating zero reference/metrology channels.
+
+See [the measured TDI optimization results](benchmarks/results/tdi_optimization/REPORT.md).
+
+Examples: [minimal prepared waveform](notebooks/minimal_prepared_xyz.ipynb)
+and [one year with shared block caches](notebooks/one_year_prepared_xyz.ipynb).
+The one-year example retains two independent XYZ waveforms and reports shared
+preparation separately from waveform evaluation.
+
+For native retarded geometry, prepare the operators with those same delays:
+
+```python
+from egb_jax_eccentric import LINK_LABELS
+
+geometry = precompute_jax_link_geometry(state, orbits=orbit)
+delays = {label: geometry["length"][i] for i, label in enumerate(LINK_LABELS)}
+tdi = prepare_xyz_from_links(state, generation=2, link_delays=delays)
+links = eccentric_links_jax(source, geometry, batch_size=1)
+xyz = tdi(links)
+```
+
+The GW-only shortcut applies to source links. Full instrument noise retains
+the SCI/TMI/REF construction documented in the referee-development note.
+
+## Tests
+
 ```bash
 python -m pytest
 ```

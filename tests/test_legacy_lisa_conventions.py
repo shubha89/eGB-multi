@@ -6,7 +6,7 @@ import pytest
 from egb_jax_eccentric import (
     EccentricBinaryParams, default_lisaorbits, eccentric_aet_jax,
     eccentric_links_jax, has_package, precompute_jax_link_geometry,
-    state_from_lisaorbits,
+    state_from_lisaorbits, prepare_xyz_from_links,
 )
 from egb_multi.noise import aet_from_xyz, xyz_from_pytdi_data
 from egb_multi.tdi import LINK_LABELS, pytdi_data_from_links
@@ -41,3 +41,62 @@ def test_legacy_native_orbit_response_preserves_retarded_tdi_delays():
 def test_legacy_modules_use_the_canonical_source_classes():
     from egb_multi.eccentric import EccentricBinaryParams as CanonicalSource
     assert EccentricBinaryParams is CanonicalSource
+
+
+def test_legacy_supplied_geometry_is_reused(monkeypatch):
+    from egb_jax_eccentric import pytdi_bridge
+    times = np.arange(2048) * 2.5
+    orbit = default_lisaorbits("esa-trailing")
+    state = state_from_lisaorbits(orbit, times)
+    geometry = precompute_jax_link_geometry(state, orbits=orbit)
+    source = EccentricBinaryParams(mean_motion=np.pi * .003,
+        eccentricity=.3, beta=.2, lambda_=-1.)
+    expected = eccentric_aet_jax(state, source, orbits=orbit, batch_size=1,
+        generation=2, measurement_order=45, delay_order=5)
+
+    def unexpected_precompute(*args, **kwargs):
+        raise AssertionError("Supplied geometry must not be rebuilt")
+
+    monkeypatch.setattr(pytdi_bridge, "precompute_jax_link_geometry", unexpected_precompute)
+    actual = eccentric_aet_jax(state, source, geometry=geometry, batch_size=1,
+        generation=2, measurement_order=45, delay_order=5)
+    for channel in ("A", "E", "T"):
+        np.testing.assert_array_equal(actual[channel], expected[channel])
+
+
+def test_legacy_prepared_native_delays_preserve_two_source_responses():
+    times = np.arange(2048) * 2.5
+    orbit = default_lisaorbits("esa-trailing")
+    state = state_from_lisaorbits(orbit, times)
+    geometry = precompute_jax_link_geometry(state, orbits=orbit)
+    delays = {label: geometry["length"][i] for i, label in enumerate(LINK_LABELS)}
+    prepared = prepare_xyz_from_links(state, link_delays=delays,
+        generation=2, measurement_order=45, delay_order=5)
+    for eccentricity in (.1, .3):
+        source = EccentricBinaryParams(mean_motion=np.pi * .003,
+            eccentricity=eccentricity, beta=.2, lambda_=-1.)
+        links = eccentric_links_jax(source, geometry, batch_size=1)
+        data = pytdi_data_from_links(state, links, link_delays=delays)
+        expected = xyz_from_pytdi_data(data, generation=2, order=45, delay_order=5)
+        actual = prepared(links)
+        for channel in "XYZ":
+            np.testing.assert_allclose(actual[channel], expected[channel], rtol=2e-12, atol=1e-30)
+
+
+def test_legacy_full_instrument_helper_retains_local_metrology():
+    from pytdi import Data
+    from egb_jax_eccentric.pytdi_bridge import xyz_from_pytdi_data as legacy_xyz
+    rng = np.random.default_rng(20261014)
+    size = 2048
+    measurements = {key: rng.normal(size=size) for key in Data.MEASUREMENTS}
+    delays = {f"d_{label}": np.full(size, 8.3 + i * .01)
+        for i, label in enumerate(LINK_LABELS)}
+    data = Data(measurements, delays, .2)
+    data.compute_delay_derivatives()
+    expected = xyz_from_pytdi_data(data, generation=2, order=5, delay_order=5)
+    actual = legacy_xyz(data, generation=2, order=5, delay_order=5)
+    shortcut = legacy_xyz(data, generation=2, order=5, delay_order=5,
+        etas={f"eta_{label}": measurements[f"sci_{label}"] for label in LINK_LABELS})
+    for channel in "XYZ":
+        np.testing.assert_array_equal(actual[channel], expected[channel])
+    assert not np.allclose(shortcut["X"], expected["X"], rtol=1e-12, atol=0.)

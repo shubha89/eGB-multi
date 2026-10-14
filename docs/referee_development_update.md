@@ -8,6 +8,20 @@ remains available. This avoids maintaining two different waveform models.
 
 ## Corrections and current capabilities
 
+The newer main-branch changes (`5b91c7c` and `6b83fe7`) are also retained:
+the public `prepare_xyz_from_links` API, the GW-only eta shortcut, the original
+full-year timing scripts and both prepared-waveform notebooks. The reusable
+operator accepts `link_delays` so native retarded geometry and cached TDI use
+the same light travel times. The general instrument-data helper still computes
+SCI/TMI/REF intermediates unless explicit GW-only etas are supplied.
+
+The [full-year prepared timing recheck](../reports/referee_prepared_tdi_timing_recheck.md)
+measured 4.15–4.39 s for prepared repeats under the original 5 s/order-3
+benchmark settings. Shared setup took 13.46 s after JAX warm-up. The earlier
+strict sub-four-second timings are not reproduced in this run; the prepared
+path remains about 5.1–5.3 times faster than its current full PyTDI reference.
+All generated outputs matched that reference exactly, and 248 tests passed.
+
 - Transform native ICRS orbit positions into barycentric mean ecliptic J2000
   for the source beta/lambda and polarization conventions.
 - With a native orbit provider, evaluate emitters at emission time and use

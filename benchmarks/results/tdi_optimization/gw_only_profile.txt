@@ -1,0 +1,33 @@
+         10419 function calls in 0.088 seconds
+
+   Ordered by: cumulative time
+   List reduced from 131 to 25 due to restriction <25>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.088    0.088 profile_tdi.py:42(<lambda>)
+        1    0.000    0.000    0.088    0.088 pytdi_bridge.py:75(xyz_from_links)
+        3    0.000    0.000    0.068    0.023 michelson.py:154(compute_factorized_michelson)
+      108    0.033    0.000    0.063    0.001 dsp.py:100(timeshift)
+       15    0.000    0.000    0.048    0.003 core.py:478(build)
+       15    0.002    0.000    0.048    0.003 core.py:357(build_shifts)
+       15    0.002    0.000    0.020    0.001 core.py:532(call)
+        1    0.000    0.000    0.020    0.020 pytdi_bridge.py:35(pytdi_data_from_links)
+        6    0.000    0.000    0.019    0.003 geometry.py:53(arm_length)
+        6    0.002    0.000    0.017    0.003 geometry.py:49(arm_vector)
+        6    0.004    0.001    0.015    0.002 geometry.py:45(relative_positions)
+       66    0.013    0.000    0.014    0.000 dsp.py:243(lagrange_taps)
+      189    0.013    0.000    0.013    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+        6    0.000    0.000    0.011    0.002 geometry.py:41(barycenter)
+        6    0.000    0.000    0.011    0.002 fromnumeric.py:3737(mean)
+        6    0.000    0.000    0.011    0.002 _methods.py:115(_mean)
+       66    0.000    0.000    0.011    0.000 einsumfunc.py:1242(einsum)
+       66    0.011    0.000    0.011    0.000 {built-in method numpy._core._multiarray_umath.c_einsum}
+        6    0.000    0.000    0.002    0.000 _linalg.py:2598(norm)
+      102    0.002    0.000    0.002    0.000 {method 'astype' of 'numpy.ndarray' objects}
+       66    0.000    0.000    0.001    0.000 _arraypad_impl.py:546(pad)
+      216    0.000    0.000    0.001    0.000 dsp.py:53(_as_floating_array)
+       67    0.001    0.000    0.001    0.000 {built-in method numpy.zeros}
+      132    0.000    0.000    0.001    0.000 fromnumeric.py:48(_wrapfunc)
+       66    0.000    0.000    0.001    0.000 fromnumeric.py:2245(clip)
+
+

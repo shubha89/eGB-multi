@@ -1,0 +1,33 @@
+         42132 function calls (38301 primitive calls) in 0.132 seconds
+
+   Ordered by: cumulative time
+   List reduced from 150 to 25 due to restriction <25>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.132    0.132 profile_tdi.py:41(<lambda>)
+        1    0.000    0.000    0.132    0.132 profile_tdi.py:20(reference)
+        3    0.000    0.000    0.112    0.037 michelson.py:154(compute_factorized_michelson)
+      171    0.051    0.000    0.100    0.001 dsp.py:100(timeshift)
+       15    0.000    0.000    0.060    0.004 core.py:478(build)
+       15    0.003    0.000    0.060    0.004 core.py:357(build_shifts)
+       15    0.005    0.000    0.048    0.003 core.py:532(call)
+      105    0.021    0.000    0.023    0.000 dsp.py:243(lagrange_taps)
+        1    0.000    0.000    0.020    0.020 pytdi_bridge.py:35(pytdi_data_from_links)
+        6    0.000    0.000    0.020    0.003 geometry.py:53(arm_length)
+        6    0.002    0.000    0.017    0.003 geometry.py:49(arm_vector)
+      105    0.000    0.000    0.017    0.000 einsumfunc.py:1242(einsum)
+      105    0.017    0.000    0.017    0.000 {built-in method numpy._core._multiarray_umath.c_einsum}
+        6    0.004    0.001    0.015    0.003 geometry.py:45(relative_positions)
+      291    0.013    0.000    0.013    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+        6    0.000    0.000    0.011    0.002 geometry.py:41(barycenter)
+        6    0.000    0.000    0.011    0.002 fromnumeric.py:3737(mean)
+        6    0.000    0.000    0.011    0.002 _methods.py:115(_mean)
+        6    0.000    0.000    0.004    0.001 core.py:767(__matmul__)
+  3309/78    0.001    0.000    0.003    0.000 copy.py:118(deepcopy)
+       78    0.000    0.000    0.003    0.000 copy.py:247(_reconstruct)
+      180    0.003    0.000    0.003    0.000 {method 'astype' of 'numpy.ndarray' objects}
+   156/78    0.000    0.000    0.003    0.000 copy.py:217(_deepcopy_dict)
+    48/30    0.000    0.000    0.003    0.000 core.py:631(simplified)
+      105    0.000    0.000    0.002    0.000 _arraypad_impl.py:546(pad)
+
+

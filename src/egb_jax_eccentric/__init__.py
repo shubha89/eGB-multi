@@ -52,6 +52,7 @@ from .pytdi_bridge import (
     eccentric_aet_jax,
     eccentric_xyz_jax,
     pytdi_data_from_links,
+    prepare_xyz_from_links,
     xyz_from_links,
     xyz_from_pytdi_data,
 )
@@ -103,6 +104,7 @@ __all__ = [
     "precompute_jax_link_geometry",
     "pytdi_data_from_links",
     "pytdi_data_from_lisainstrument_result",
+    "prepare_xyz_from_links",
     "recommended_eccentric_order",
     "select_peters_mathews_evolution_mode",
     "state_from_lisaorbits",

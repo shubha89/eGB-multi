@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -68,7 +70,8 @@ def pytdi_data_from_links(
     delays = {}
     for label, (sender, receiver) in zip(LINK_LABELS, LINKS, strict=True):
         value = state.arm_length(sender, receiver) if link_delays is None else np.asarray(link_delays[label], dtype=np.float64)
-        if value.shape != (state.t.size,) or np.any(~np.isfinite(value)) or np.any(value <= 0.0):
+        invalid_sign = np.any(value < 0.0) or (link_delays is not None and np.any(value == 0.0))
+        if value.shape != (state.t.size,) or np.any(~np.isfinite(value)) or invalid_sign:
             raise ValueError(f"invalid light travel times for link {label}")
         delays[f"d_{label}"] = value
 
@@ -87,18 +90,27 @@ def xyz_from_links(
     delay_order: int = 3,
     link_delays: dict[str, NDArray[np.float64]] | None = None,
 ) -> dict[str, NDArray[np.complex128]]:
-    """Compute pyTDI Michelson X/Y/Z from six link responses."""
+    """Compute pyTDI Michelson X/Y/Z from six GW-only link responses.
+
+    With zero reference/metrology channels, eta_ij equals sci_ij exactly.
+    Pass these intermediates directly to avoid interpolating zero channels.
+    """
 
     data = pytdi_data_from_links(state, links, link_delays=link_delays)
-    return xyz_from_pytdi_data(data, generation=generation, order=measurement_order, delay_order=delay_order)
+    etas = {f"eta_{label}": data.measurements[f"sci_{label}"] for label in LINK_LABELS}
+    return xyz_from_pytdi_data(data, generation=generation, order=measurement_order,
+                              delay_order=delay_order, etas=etas)
 
 
-def xyz_from_pytdi_data(data, *, generation: int = 2, order: int = 45, delay_order: int = 5) -> dict[str, NDArray]:
+def xyz_from_pytdi_data(data, *, generation: int = 2, order: int = 45,
+                      delay_order: int = 5, etas=None) -> dict[str, NDArray]:
     """Compute Doppler-frequency Michelson XYZ, retaining the input units.
 
     Instrument streams in Hz produce XYZ in Hz; GW fractional-frequency
     streams remain dimensionless. Order 45 is the tested high-order setting
     for synthetic laser-noise diagnostics, not an arbitrary-band guarantee.
+    Leave etas unset for full instrument SCI/TMI/REF data. GW-only callers
+    may supply eta=sci to avoid interpolating identically zero local streams.
     """
     try:
         from pytdi.michelson import compute_factorized_michelson
@@ -108,6 +120,7 @@ def xyz_from_pytdi_data(data, *, generation: int = 2, order: int = 45, delay_ord
     return {
         "X": compute_factorized_michelson(
             data,
+            etas=etas,
             rot=0,
             order=order,
             delay_order=delay_order,
@@ -116,6 +129,7 @@ def xyz_from_pytdi_data(data, *, generation: int = 2, order: int = 45, delay_ord
         ),
         "Y": compute_factorized_michelson(
             data,
+            etas=etas,
             rot=1,
             order=order,
             delay_order=delay_order,
@@ -124,6 +138,7 @@ def xyz_from_pytdi_data(data, *, generation: int = 2, order: int = 45, delay_ord
         ),
         "Z": compute_factorized_michelson(
             data,
+            etas=etas,
             rot=2,
             order=order,
             delay_order=delay_order,
@@ -131,6 +146,93 @@ def xyz_from_pytdi_data(data, *, generation: int = 2, order: int = 45, delay_ord
             unit="frequency",
         ),
     }
+
+
+def prepare_xyz_from_links(
+    state: LISAState,
+    *,
+    generation: int = 1,
+    measurement_order: int = 3,
+    delay_order: int = 3,
+    link_delays: dict[str, NDArray[np.float64]] | None = None,
+) -> Callable[[dict[str, NDArray]], dict[str, NDArray]]:
+    """Prepare reusable pyTDI XYZ operators for a fixed time grid and orbit.
+
+    The returned callable accepts six GW-only links on exactly this grid.
+    Nested delays and frequency-unit Doppler factors are computed once using
+    pyTDI; measurement interpolation is still evaluated on every call. Both
+    generations retain pyTDI's factorized evaluation order, including its
+    boundary behavior and time-varying delays. No constant-arm approximation
+    is introduced. Reference/metrology/noise beatnotes are not accepted.
+
+    Prepare a new callable if times, positions, or interpolation settings
+    change. Cache per block for large datasets: stored delay arrays use memory
+    proportional to the number of samples. The callable does not cache source
+    links and can be reused as source parameters change.
+    For native retarded link geometry, supply its receiver/emitter light
+    travel times in link_delays, matching the link-response geometry.
+    """
+    from pytdi.core import LISATDICombination
+
+    if generation not in (1, 2):
+        raise ValueError("generation must be 1 or 2")
+    for name, order in (("measurement_order", measurement_order), ("delay_order", delay_order)):
+        if not isinstance(order, (int, np.integer)) or order < 1 or order % 2 != 1:
+            raise ValueError(f"{name} must be a positive odd integer")
+    size = state.t.size
+    zeros = np.zeros(size)
+    data = pytdi_data_from_links(state, dict.fromkeys(LINK_LABELS, zeros),
+                               link_delays=link_delays)
+
+    def build(components):
+        return LISATDICombination(components).build(**data.args, order=delay_order)
+
+    def prepare_channel(labels):
+        # Same factorization as pytdi.michelson.compute_factorized_michelson.
+        # Ordered delay lists must not be reordered: unequal-arm delays do not
+        # generally commute. Frequency-unit derivatives are retained by build.
+        a, b, c, d = labels
+        arm1 = build({f"eta_{a}": [(1, [])], f"eta_{b}": [(1, [f"D_{a}"])]})
+        arm2 = build({f"eta_{c}": [(1, [])], f"eta_{d}": [(1, [f"D_{c}"])]})
+        ab, cd = [f"D_{a}", f"D_{b}"], [f"D_{c}", f"D_{d}"]
+        if generation == 1:
+            final = build({"x_arm_1": [(-1, []), (1, cd)],
+                           "x_arm_2": [(1, []), (-1, ab)]})
+
+            def evaluate(etas):
+                arms = {"x_arm_1": arm1(etas, order=measurement_order, unit="frequency"),
+                        "x_arm_2": arm2(etas, order=measurement_order, unit="frequency")}
+                return final(arms, order=measurement_order, unit="frequency")
+        else:
+            round1 = build({"arm_a": [(1, [])], "arm_b": [(1, ab)]})
+            round2 = build({"arm_a": [(1, cd)], "arm_b": [(1, [])]})
+            final = build({"roundtrip_a": [(-1, []), (1, cd + ab)],
+                           "roundtrip_b": [(1, []), (-1, ab + cd)]})
+
+            def evaluate(etas):
+                arms = {"arm_a": arm1(etas, order=measurement_order, unit="frequency"),
+                        "arm_b": arm2(etas, order=measurement_order, unit="frequency")}
+                rounds = {"roundtrip_a": round1(arms, order=measurement_order, unit="frequency"),
+                          "roundtrip_b": round2(arms, order=measurement_order, unit="frequency")}
+                return final(rounds, order=measurement_order, unit="frequency")
+        return evaluate
+
+    channels = dict(zip("XYZ", [prepare_channel(labels) for labels in
+        (("12", "21", "13", "31"), ("23", "32", "21", "12"), ("31", "13", "32", "23"))], strict=True))
+
+    def evaluate_xyz(links):
+        missing = sorted(set(LINK_LABELS) - set(links))
+        if missing:
+            raise ValueError(f"missing link responses for {missing}")
+        etas = {}
+        for label in LINK_LABELS:
+            values = np.asarray(links[label], dtype=np.complex128)
+            if values.shape != (size,):
+                raise ValueError(f"link {label} has shape {values.shape}, expected {(size,)}")
+            etas[f"eta_{label}"] = values
+        return {name: channel(etas) for name, channel in channels.items()}
+
+    return evaluate_xyz
 
 
 def aet_from_xyz(xyz: dict[str, NDArray]) -> dict[str, NDArray]:

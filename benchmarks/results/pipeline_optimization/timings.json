@@ -1,0 +1,479 @@
+{
+  "config": {
+    "cases": [
+      [
+        0.001,
+        0.0
+      ],
+      [
+        0.003,
+        0.3
+      ],
+      [
+        0.01,
+        0.6
+      ]
+    ],
+    "days": 365.25,
+    "samples": 6311520,
+    "dt_s": 5.0,
+    "block_samples": 65536,
+    "halo_samples": 128,
+    "blocks": 97,
+    "repeats": 3,
+    "generation": 2,
+    "measurement_order": 3,
+    "delay_order": 3,
+    "physics": "1pn_periastron",
+    "fdot": 0.0,
+    "masses_solar": [
+      0.6,
+      0.4
+    ],
+    "batch_size": 1,
+    "seed": 20260921
+  },
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "cpu_count": 10,
+  "devices": [
+    "cpu:0"
+  ],
+  "versions": {
+    "jax": "0.11.2",
+    "jaxlib": "0.11.2",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "pytdi": "2.2.1",
+    "lisaorbits": "3.1.0"
+  },
+  "source_hashes": {
+    "src/egb_jax_eccentric/pytdi_bridge.py": "6babfcc8f3974b078c88db4014737de6b5bcd63678e7f9c27dc15211a82ffca6",
+    "src/egb_jax_eccentric/eccentric_jax.py": "e3d7774a83642a45ce88ce1f08046697f84b33875a2e327615fbb3bfaaeaf20b",
+    "benchmarks/compare_pipeline_optimizations.py": "34f5c915c2292b4f3df226265d0b1bda285e752df50e6541af8d29697b5aa465"
+  },
+  "timing_boundary": "Sum of full geometry/links/XYZ block-call wall intervals. Prepared calls exclude cached setup. Checks, imports, JIT warmup and JSON I/O excluded.",
+  "cache_scope": "One block reused across all cases and repeats, then released; no whole-year-cache assumption.",
+  "rows": [
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 0,
+      "mode": "original",
+      "geometry_s": 2.532382581906859,
+      "links_s": 1.697420293057803,
+      "tdi_s": 12.17564649617998,
+      "total_s": 16.405515668913722
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 0,
+      "mode": "improved",
+      "geometry_s": 2.530027295171749,
+      "links_s": 1.6882015359587967,
+      "tdi_s": 7.894646831962746,
+      "total_s": 12.112947054964025
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 0,
+      "mode": "prepared",
+      "geometry_s": 0.0,
+      "links_s": 1.6970147562096827,
+      "tdi_s": 2.0709309517988004,
+      "total_s": 3.7680241674534045
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 1,
+      "mode": "original",
+      "geometry_s": 2.53012645279523,
+      "links_s": 1.7034105010679923,
+      "tdi_s": 12.147353165142704,
+      "total_s": 16.380964162992314
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 1,
+      "mode": "improved",
+      "geometry_s": 2.5223382441326976,
+      "links_s": 1.6901469201548025,
+      "tdi_s": 7.844081839604769,
+      "total_s": 12.056635834043846
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 1,
+      "mode": "prepared",
+      "geometry_s": 0.0,
+      "links_s": 1.6890652072033845,
+      "tdi_s": 2.056755163881462,
+      "total_s": 3.745898747991305
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 2,
+      "mode": "original",
+      "geometry_s": 2.5233381311409175,
+      "links_s": 1.6962324209162034,
+      "tdi_s": 12.115941249125171,
+      "total_s": 16.33557833818486
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 2,
+      "mode": "improved",
+      "geometry_s": 2.522141285939142,
+      "links_s": 1.6918122482020408,
+      "tdi_s": 7.844760576903354,
+      "total_s": 12.05877999420045
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 2,
+      "mode": "prepared",
+      "geometry_s": 0.0,
+      "links_s": 1.6887221249053255,
+      "tdi_s": 2.039427210285794,
+      "total_s": 3.7282279150094837
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 0,
+      "mode": "original",
+      "geometry_s": 2.5312651660642587,
+      "links_s": 1.8588205445557833,
+      "tdi_s": 12.01040912407916,
+      "total_s": 16.400560916750692
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 0,
+      "mode": "improved",
+      "geometry_s": 2.5209627891890705,
+      "links_s": 1.8248407959472388,
+      "tdi_s": 7.83541075285757,
+      "total_s": 12.181281168945134
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 0,
+      "mode": "prepared",
+      "geometry_s": 0.0,
+      "links_s": 1.8312688288278878,
+      "tdi_s": 2.0331685400451533,
+      "total_s": 3.864515964698512
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 1,
+      "mode": "original",
+      "geometry_s": 2.5277365351794288,
+      "links_s": 1.8520418680272996,
+      "tdi_s": 12.00656133244047,
+      "total_s": 16.386404583463445
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 1,
+      "mode": "improved",
+      "geometry_s": 2.5155030869646,
+      "links_s": 1.8272017919807695,
+      "tdi_s": 7.7793244167696685,
+      "total_s": 12.12209467496723
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 1,
+      "mode": "prepared",
+      "geometry_s": 0.0,
+      "links_s": 1.8245023825438693,
+      "tdi_s": 2.0360720800817944,
+      "total_s": 3.8606544969952665
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 2,
+      "mode": "original",
+      "geometry_s": 2.535373872204218,
+      "links_s": 1.8470976130920462,
+      "tdi_s": 12.090237589378376,
+      "total_s": 16.47277566336561
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 2,
+      "mode": "improved",
+      "geometry_s": 2.5237965402775444,
+      "links_s": 1.8286339187761769,
+      "tdi_s": 7.816964881669264,
+      "total_s": 12.16945987479994
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 2,
+      "mode": "prepared",
+      "geometry_s": 0.0,
+      "links_s": 1.8223465810879134,
+      "tdi_s": 2.036506451724563,
+      "total_s": 3.858932666189503
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 0,
+      "mode": "original",
+      "geometry_s": 2.5288118751486763,
+      "links_s": 1.9124549610423855,
+      "tdi_s": 11.986621995922178,
+      "total_s": 16.42795587418368
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 0,
+      "mode": "improved",
+      "geometry_s": 2.5179589584004134,
+      "links_s": 1.9068528820062056,
+      "tdi_s": 7.811886626994237,
+      "total_s": 12.236765087000094
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 0,
+      "mode": "prepared",
+      "geometry_s": 0.0,
+      "links_s": 1.902831666113343,
+      "tdi_s": 2.023042591055855,
+      "total_s": 3.9259590850560926
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 1,
+      "mode": "original",
+      "geometry_s": 2.520387037016917,
+      "links_s": 1.9190260784816928,
+      "tdi_s": 12.003405875642784,
+      "total_s": 16.44288558216067
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 1,
+      "mode": "improved",
+      "geometry_s": 2.5151870490517467,
+      "links_s": 1.9462386667146347,
+      "tdi_s": 7.75930041691754,
+      "total_s": 12.220797213667538
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 1,
+      "mode": "prepared",
+      "geometry_s": 0.0,
+      "links_s": 1.901158959895838,
+      "tdi_s": 2.019509583711624,
+      "total_s": 3.9207475893199444
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 2,
+      "mode": "original",
+      "geometry_s": 2.5370847057783976,
+      "links_s": 1.9118748657638207,
+      "tdi_s": 12.044009421137162,
+      "total_s": 16.493035502033308
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 2,
+      "mode": "improved",
+      "geometry_s": 2.5292780822492205,
+      "links_s": 1.9528391661006026,
+      "tdi_s": 7.845971794275101,
+      "total_s": 12.328157247218769
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 2,
+      "mode": "prepared",
+      "geometry_s": 0.0,
+      "links_s": 1.918474129808601,
+      "tdi_s": 2.041661792609375,
+      "total_s": 3.960215341183357
+    }
+  ],
+  "first_block_warmup_s": {
+    "original": [
+      0.026958250033203512,
+      0.22523549996549264,
+      0.11941612500231713,
+      0.3716110000386834
+    ],
+    "improved": [
+      0.026658791990485042,
+      0.021934457996394485,
+      0.08521054201992229,
+      0.1338051250204444
+    ],
+    "prepared": [
+      0.0,
+      0.021677000040654093,
+      0.024714458035305142,
+      0.04639229201711714
+    ]
+  },
+  "completed_blocks": 97,
+  "cached_geometry_setup_s": 2.527837749803439,
+  "prepared_tdi_setup_s": 5.759955921850633,
+  "validation": [
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 0,
+      "mode": "improved",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 0,
+      "mode": "prepared",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 1,
+      "mode": "improved",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 1,
+      "mode": "prepared",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 2,
+      "mode": "improved",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.001,
+      "eccentricity": 0.0,
+      "repeat": 2,
+      "mode": "prepared",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 0,
+      "mode": "improved",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 0,
+      "mode": "prepared",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 1,
+      "mode": "improved",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 1,
+      "mode": "prepared",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 2,
+      "mode": "improved",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.003,
+      "eccentricity": 0.3,
+      "repeat": 2,
+      "mode": "prepared",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 0,
+      "mode": "improved",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 0,
+      "mode": "prepared",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 1,
+      "mode": "improved",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 1,
+      "mode": "prepared",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 2,
+      "mode": "improved",
+      "relative_l2_xyz": 0.0
+    },
+    {
+      "frequency_hz": 0.01,
+      "eccentricity": 0.6,
+      "repeat": 2,
+      "mode": "prepared",
+      "relative_l2_xyz": 0.0
+    }
+  ]
+}
