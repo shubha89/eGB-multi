@@ -1,4 +1,4 @@
-"""JAX eccentric compact-binary response models with pyTDI helpers."""
+"""Compatibility API backed by the current referee-development egb_multi package."""
 
 from .eccentric import (
     ECCENTRIC_EVOLUTION_MODE_ALIASES,
@@ -40,7 +40,11 @@ from .eccentric_jax import (
     pack_eccentric_sources,
     precompute_jax_link_geometry,
 )
-from .external import default_lisaorbits, has_package, state_from_lisaorbits
+from .external import (
+    cartesian_frame_rotation, default_lisaorbits, has_package,
+    link_delays_from_lisaorbits, state_from_lisaorbits,
+)
+from .noise import pytdi_data_from_lisainstrument_result, simulate_lisainstrument_tdi_noise
 from .geometry import LISAState, lisa_orbit
 from .pytdi_bridge import (
     LINK_LABELS,
@@ -49,6 +53,7 @@ from .pytdi_bridge import (
     eccentric_xyz_jax,
     pytdi_data_from_links,
     xyz_from_links,
+    xyz_from_pytdi_data,
 )
 
 __all__ = [
@@ -65,6 +70,7 @@ __all__ = [
     "PetersMathewsSwitchPoint",
     "PetersMathewsSwitchRule",
     "aet_from_xyz",
+    "cartesian_frame_rotation",
     "calibrate_peters_mathews_switch_rule",
     "complex_strain_fitting_factor",
     "complex_strain_mismatch",
@@ -87,6 +93,7 @@ __all__ = [
     "harmonic_links_jax",
     "has_package",
     "lisa_orbit",
+    "link_delays_from_lisaorbits",
     "mikkola_kepler",
     "pack_eccentric_response_sources",
     "pack_eccentric_sources",
@@ -95,8 +102,11 @@ __all__ = [
     "peters_mathews_source_mismatch",
     "precompute_jax_link_geometry",
     "pytdi_data_from_links",
+    "pytdi_data_from_lisainstrument_result",
     "recommended_eccentric_order",
     "select_peters_mathews_evolution_mode",
     "state_from_lisaorbits",
+    "simulate_lisainstrument_tdi_noise",
     "xyz_from_links",
+    "xyz_from_pytdi_data",
 ]

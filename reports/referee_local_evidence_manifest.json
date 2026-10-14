@@ -1,0 +1,181 @@
+{
+  "archived_inputs_git_tracked": false,
+  "restored": [
+    {
+      "path": "outputs/referee/task_2_8_20261009_high_pm_seed_resolution/validation_summary.json",
+      "sha256": "b1761e5a14ec10e37775dbe68d02ede133551508f42af7b8c9f959cf52a9961e",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_annual_search_high_pm_branch_repaired/validation_summary.json",
+      "sha256": "fd216d067a19bb2f5eb0d336ec7d07474c950a127c245a87a570e6552bad704e",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_annual_refinement_high_pm_branch_repaired/validation_summary.json",
+      "sha256": "f7532b2caf37c0c50e8853eb6c7eeddc10292296abd68e36415b912a8717500b",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_branch_agreement_review/validation_summary.json",
+      "sha256": "04684317351e675f78c5c5626c89368177d2334fffeed47d4f1fdda6eeeeb2d5",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_annual_search_low_asymmetric/validation_summary.json",
+      "sha256": "fd216d067a19bb2f5eb0d336ec7d07474c950a127c245a87a570e6552bad704e",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_annual_search_mid_e/validation_summary.json",
+      "sha256": "fd216d067a19bb2f5eb0d336ec7d07474c950a127c245a87a570e6552bad704e",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_annual_search_small_e_limit/validation_summary.json",
+      "sha256": "fd216d067a19bb2f5eb0d336ec7d07474c950a127c245a87a570e6552bad704e",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_finite_high_pm_branch_refined/validation_summary.json",
+      "sha256": "4567c6c1e27ad69d53235094abfe3efdf458032ed91a15cd592d3e09d747d35f",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_finite_low_asymmetric/validation_summary.json",
+      "sha256": "858dca524102ea09d5df7bc868966e3f19c4ab9bbbcbb639771d7e37108798fa",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_covariance_closure_grid/validation_summary.json",
+      "sha256": "6df67f514534b4e281c5c13ef877cf25deba2b12860c999755ff07a23fdde663",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_primary_laser_extended/validation_summary.json",
+      "sha256": "007bfb7b0a735dbe52d209fe69869bf04fb9d0ebee5c5e74d9f6994a030286c1",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_moving_secondary_coarse/validation_summary.json",
+      "sha256": "c79ef242c7e7420217fd3c8da52e46c38b7600a154bd8ce53379d2f521cce6d4",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_moving_secondary_refined/validation_summary.json",
+      "sha256": "f385423bc64a0b20e7097f17d7b03e7472d49d82d029162c9ab3747ff50dde67",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_independent_high_e_epoch_repaired/validation_summary.json",
+      "sha256": "dbf65d11575695e5f2d1fb549d3efa4f8c207ce344a7038bd5612876b6435d7e",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_optimized_contour_branch_repaired/validation_summary.json",
+      "sha256": "41bf37d2628ba91cf10b2faf62113aaed7229401d3145d9ee2c1813e0b808a96",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_band_campaign_branch_repaired/validation_summary.json",
+      "sha256": "c3e22be55e7e904d7cf7ee0f731bc0e08833dca386ecc08ec41d6dd79a0d05b2",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_final_high_pm_cadence_branch_repaired/validation_summary.json",
+      "sha256": "acdd3d215c0a0cac8073746fc07dbdf431bdc1662664d850e2bc1e5ea27cb245",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_high_pm_final_metric_independent/validation_summary.json",
+      "sha256": "acdd3d215c0a0cac8073746fc07dbdf431bdc1662664d850e2bc1e5ea27cb245",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_annual_search_high_pm_branch_repaired/high_pm_annual_search.json",
+      "sha256": "d4806b355ecac9ecebdf47260e1913dc5862ff32a52952d132f33d7147ad1298",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_followup_plan/high_pm_annual_inputs/high_pm_source.json",
+      "sha256": "01fd8c48e5683cee130c28146115be76d10c84d20563f25eb01034d49d31fca8",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_followup_plan/high_pm_annual_inputs/high_pm_signal.npz",
+      "sha256": "484357666a14bd1698004b6459def03921e62acf16a068380807573ec1e7b332",
+      "method": "read-only reference to historical array; no new waveform copy"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_followup_plan/high_pm_annual_inputs/annual_covariance.npz",
+      "sha256": "4891a6cf984af52a46cc05284ef444ddf027aa567290ff0ae9b1ffc276088f9b",
+      "method": "read-only reference to historical array; no new waveform copy"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_final_high_pm_cadence_branch_repaired/annual_refinement.json",
+      "sha256": "207b42e13112d4633092130f85d8e95811c14edc2bb16193c543235899b389da",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_final_high_pm_cadence_branch_repaired/manifest.json",
+      "sha256": "4e144d4173b6e099353f073d6c3e14dc3f8a78766d54d754405b954acacc1354",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_high_pm_final_metric_independent/input_independent_reference_refinement.json",
+      "sha256": "207b42e13112d4633092130f85d8e95811c14edc2bb16193c543235899b389da",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_followup_plan/high_pm_final_metric_independent_plan.json",
+      "sha256": "c2a63e1823229aeba2da70d36643a2712502b1a9f58d22c76e01e8269085efb4",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_followup_plan/high_pm_band_cadence_plan.json",
+      "sha256": "399e54dd7620b52e316c231911ef36b3d2c8762d89cae87aca755707fcfc171b",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_followup_plan/prepared_production_configuration.json",
+      "sha256": "78b134703b24e4dd1df784ed42f7b30c3b82752a9d079332502dfd49f7843f18",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_high_pm_final_metric_independent/annual_refinement.json",
+      "sha256": "da5c969653c83a91d648f70a8cc2e238a8a6551bacfd2a42a4fb4b94232e1fca",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_high_pm_band_cadence/annual_refinement.json",
+      "sha256": "e81734384ba2e8e99f9ef35d6f70477ec76f75d601d51ce902914d5262c08bbe",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_completion/reviewed_evidence_inventory.json",
+      "sha256": "88c9acc5cf2b1c88362eef748d422f8a42a07bad9060ab8fa373c03d1e299117",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_completion/reviewed_closure_evidence.json",
+      "sha256": "8fd3d63bbd405987fdaac888353bf2897dbdab505615560a1830371590714861",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261009_closure_plan/tests_with_batched_seeds.log",
+      "sha256": "3f29a3a18aca7155106f68da6a1e5f7b8206aff0137dd9d0174bf60e92e999a3",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_high_pm_final_metric_independent/manifest.json",
+      "sha256": "686dd6ce0897f7683f10fa8fad780b5a84744d3e0ab878abce8078d1aaa94047",
+      "method": "copied immutable evidence"
+    },
+    {
+      "path": "outputs/referee/task_2_8_20261012_high_pm_band_cadence/manifest.json",
+      "sha256": "1395f928a61f5b6434570143d235695cf9faafa0b7497a673aa8f530c656a79b",
+      "method": "copied immutable evidence"
+    }
+  ],
+  "note": "Historical NPZ evidence remains in the original scientific workspace and is linked locally. Production transient waveform retention is unchanged. A source-only Git checkout needs these historical inputs or their reruns before the frozen-configuration audit can pass."
+}

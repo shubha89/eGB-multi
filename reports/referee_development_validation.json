@@ -1,0 +1,56 @@
+{
+  "status": "complete_referee_development_import_validated",
+  "tests": {
+    "passed": 234,
+    "skipped": 0,
+    "elapsed_s": 34.61,
+    "legacy_tests_included": true,
+    "coverage": "Includes existing native laser-only, independent LISA GW Response convention tests, optimizer and numerical controls; not new annual production runs."
+  },
+  "canonical_source_sha256": {
+    "src/egb_multi/__init__.py": "6794053319c6fe8eb1741f8173fea4510212e2f73a9e970326aae466231b22d2",
+    "src/egb_multi/band_bounds.py": "2049c62392c2bf47e1d9090c3d9246e0993f7704a8e340997d6e5977ff52425d",
+    "src/egb_multi/circular_envelope.py": "bae08afc23745d90d56e33265e46f130cc279738c54b5f1f43acdd30f9897338",
+    "src/egb_multi/circular_family_search.py": "9adb40367703ff1201714558728079197ed9de1e1c5b5a68375ce88d62128772",
+    "src/egb_multi/circular_fit.py": "725de0277a374a7c8dc77bb0aec6e533d3b451812159acf0d96c1dae41d00a05",
+    "src/egb_multi/circular_refinement.py": "0979d809b90ca87445e55e4b49ec00e8aecccf14cd08e63bf34cea2555741bea",
+    "src/egb_multi/circular_search.py": "f31c9b300d5012ca42fd3ba919a3f4c2b38667cb13a01d1e312f196d7274e7fe",
+    "src/egb_multi/circular_seeds.py": "e90b0217b1810bcd9c47bf9fca058e2dd551f63e97d53f72e99b7bcf5eacd8cc",
+    "src/egb_multi/circular_spectral.py": "90960b5ecd3efa9dde6ab85b24ea447cd5befe0c729c38a05f953385d62d8e3f",
+    "src/egb_multi/comparison.py": "5c004d94eaa4b5e55136076a27bb2a662cf8dfda8a3748b5c4c4aebaf4c34283",
+    "src/egb_multi/constants.py": "be2ac7877260b760f4c95e774fdb7ef42d29fa7c44f0aa496c69a0a58a815f8b",
+    "src/egb_multi/eccentric.py": "e88d5f9514a61075a9d9194064c66ef0bcf2063422d2fcbc94a5501b698fd373",
+    "src/egb_multi/eccentric_jax.py": "37c8cedb604cf8dbc33941d73bdd8ecf99d6cfdbbf2611044f19544e91700a50",
+    "src/egb_multi/external.py": "9097112359b270c577c97e554c7c1daccf7be75dec410ff8e351ae7e536477dc",
+    "src/egb_multi/fastgb_convention.py": "3b4c81756740179d2a85547644fd144e80990a0ad00cc726f3f3955807a78363",
+    "src/egb_multi/finite_covariance.py": "6c5dfa74cae259f4929a7b378e3703528f7756aa85106e93792968e633665d36",
+    "src/egb_multi/geometry.py": "58e1b5149ef15fd4604e1cdf03f83940c126eb436655e8aeb90c314f48b5eee4",
+    "src/egb_multi/laser_symbol.py": "19a30998162d77169bf62713be1868ca24a366abe521a3a78f31b627e2508e1a",
+    "src/egb_multi/metric_perturbation.py": "dbaad18ab45162a2f2cfb42081c8d5fc77a0ad2d69148c526bc49d70c657fcdb",
+    "src/egb_multi/native_validation.py": "1a62ff015bb847417b28697d18ae6b1c3af9ec1413eb4bb7be36ad24ab4c37b6",
+    "src/egb_multi/noise.py": "1d8b919c28c51986acf341334a23e98eb77417c715772211f61651ecf5b5cfbd",
+    "src/egb_multi/noise_covariance.py": "4ca69083afd967aeaafe4c8a401d38e942fdd12468594e529041d12ff4483e14",
+    "src/egb_multi/reference.py": "6b5c97aecf6063c8db5d75593cd1b7979fbed7d78071ccaa75ad50365d0a6e3b",
+    "src/egb_multi/response.py": "f3b9202d7210664ce5c870b78dc2fdc188d73e32de9b0ad46b20af7f6b6f1b12",
+    "src/egb_multi/sources.py": "1028a884f141fffcd1982f66626b3ebb09a7a05dca07884cb77379fc6f32f6f1",
+    "src/egb_multi/spectral_window.py": "02e21cbf0b14bf454ae5a87b871a9a28482ea69bfe50ea2cb8452a280c94ee55",
+    "src/egb_multi/spline_fourier.py": "ad2a23b356dfc35eb6df335026e4a56bbfa9ef9217ba03f7c1dbb5c5c46732bd",
+    "src/egb_multi/tdi.py": "c3706da6c82645e44a8e411e1e91cf6f70fe485c3e013cd98ca93260afdf437f",
+    "src/egb_multi/tensors.py": "de9376d6e3e26b009c7969b8f3d56638a6f30e05558df00ecfaf04e964b3a19e",
+    "src/egb_multi/wfgb.py": "48bcafbfb853f437e3fae0153bd40709b84ff95a6275ab62461df5b8bb827bc9"
+  },
+  "canonical_source_matches_frozen_working_tree": true,
+  "frozen_task_2_8_review": {
+    "accepted": true,
+    "hash_errors": []
+  },
+  "wheel": {
+    "name": "egb_multi-0.1.0-py3-none-any.whl",
+    "sha256": "67192df23e1de75f66a96ba0543c5605d66e41ceb6c85a03fc60cbf1de086087",
+    "isolated_install_imports_checked": true,
+    "native_retarded_legacy_aet_smoke_checked": true
+  },
+  "original_euler_inputs_modified": false,
+  "git_remote": "git@github.com:shubha89/eGB-multi.git",
+  "remaining": "Full sampled-instrument locking arithmetic repair is not established by this package import. Current idealized reference and explicit residual covariance retained."
+}
