@@ -114,6 +114,14 @@ and [one year with shared block caches](notebooks/one_year_prepared_xyz.ipynb).
 The one-year example retains two independent XYZ waveforms and reports shared
 preparation separately from waveform evaluation.
 
+Current-checkout timing: [prepared XYZ benchmark](notebooks/prepared_xyz_timing.ipynb).
+It runs three full-year source cases with three warmed repeats and reports
+JAX first-call warm-up, geometry/operator preparation and per-source timings
+separately, using matched native retarded delays.
+The [64-source batch notebook](notebooks/prepared_xyz_batch_timing.ipynb)
+tests warmed chunk sizes 1–64 for separate XYZ waveforms and summed source
+responses, with isolated-worker memory measurements.
+
 For native retarded geometry, prepare the operators with those same delays:
 
 ```python
