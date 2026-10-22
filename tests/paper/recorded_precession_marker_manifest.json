@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-21",
+  "operation": "vector annotation only",
+  "new_scientific_runs": 0,
+  "base_pdf": "data/periastron_envelope_base.pdf",
+  "base_sha256": "d520d21de276cb10b4e14ac1be98c9d88cb811b2d24d465e05f5546e538f9660",
+  "full_apsidal_period_days": 400.30830263053974,
+  "half_period_days": 200.15415131526987,
+  "time_axis_days": [
+    0,
+    356
+  ],
+  "axes_boxes_pdf_points": [
+    [
+      53.465625,
+      38.2,
+      464.4043729796,
+      142.79952
+    ],
+    [
+      53.465625,
+      204.0,
+      464.4043729796,
+      142.79952
+    ]
+  ],
+  "marker_x_pdf_points": 314.5680495528985,
+  "label": "T_varpi/2",
+  "interpretation": "Approximate quadrupolar envelope modulation; full apsidal period remains twice this interval",
+  "outputs_sha256": {
+    "figures/periastron_envelope.pdf": "4bc094ab410d71029e8136608e13d4245fc2612665bb471c962cf223fcba62eb",
+    "figures/periastron_envelope.png": "c80f9cad40215771710962d23cd243ed5dde45f6d99ab8455b0730da1e1a8666"
+  }
+}

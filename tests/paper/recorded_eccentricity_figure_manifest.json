@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-21",
+  "status": "saved_data_figure_redesign",
+  "new_waveform_or_search_runs": 0,
+  "source_csv_sha256": "a5b00f9058ce64b76a860aee68a981f7518c38902479b168992668380b638287",
+  "plot_driver_sha256": "6f3eb32ec69d6c6b076e4876bf4798214a7048ef152ea9d32f05a499268a7caa",
+  "nominal_points": 22,
+  "broader_search_points": 14,
+  "main_axes": 1,
+  "low_eccentricity_insets": 1,
+  "physical_interpretation": "rho_recovered=overlap*rho_optimal; not a detection threshold",
+  "interpolation": "Straight guides only between saved points within a source family; no smoothing or fitted curves",
+  "files_sha256": {
+    "data/restricted_eccentricity_plot_values.json": "d8d183a707427b67dec32c32a1583638b7902c40595cdac5a74e6dae686e97e5",
+    "figures/restricted_eccentricity_effects.pdf": "66ce36c4a33a3e9c2ebb4fd3c3a5b3c66adc9b5ae54e4cc4920247cb30491429",
+    "figures/restricted_eccentricity_effects.png": "580b70d61042451270b1524e5ec89bb1e7f45fef9dd2665d1a5880d68f846ad9",
+    "figures/restricted_eccentricity_effects.svg": "465d2a3296f3c1e8104a3381b892fd5dc2db45b6afba82ca025744e4beff2cfc"
+  }
+}

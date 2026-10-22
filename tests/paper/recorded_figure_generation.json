@@ -1,0 +1,65 @@
+{
+  "source_harmonics": {
+    "dt_s": 2.5,
+    "radial_periods": 512,
+    "f0_hz": 0.001,
+    "eccentricities": [
+      0,
+      0.3,
+      0.6
+    ],
+    "polarization_power_fraction_above_25mHz": {
+      "0.0": 3.0410778247810303e-26,
+      "0.3": 8.085282949539038e-26,
+      "0.6": 1.4335729722329023e-11
+    }
+  },
+  "periastron_envelope": {
+    "dt_s": 10.0,
+    "duration_days": 356,
+    "bin_days": 0.2,
+    "rms_window_days": 0.5,
+    "edge_exclusion_days": 0.5,
+    "precession_period_days": 400.30830263053974,
+    "max_absolute_local_envelope_ratio_change_10s_to_5s": 0.0003633188334386528,
+    "check_scope": "nine 0.5-day windows; no response-level bound",
+    "half_precession_period_days": 200.15415131526987,
+    "marker": "Dashed vertical marker at the apsidal half-period, in both panels",
+    "annotation_manifest": "precession_marker_manifest.json",
+    "new_waveform_runs_for_annotation": 0
+  },
+  "pm_rates": {
+    "duration_years": 4,
+    "approximation": "leading initial rates, Newtonian n=pi*f0",
+    "generator": "egb_multi.eccentric.peters_mathews_derivatives"
+  },
+  "annual_covariance": {
+    "input": "outputs/referee/task_2_9_20261012_production/shared/annual_covariance.npz",
+    "sha256": "91b3532044829b76257be4256add471dcac210a2f5041a9d285a1fb6227d5345",
+    "unit": "fractional-frequency one-sided PSD, Hz^-1",
+    "display": "2000 log-spaced saved bins; no recomputation"
+  },
+  "restricted_eccentricity_effects": {
+    "input": "data/representative_sources_updated.csv",
+    "sha256": "a5b00f9058ce64b76a860aee68a981f7518c38902479b168992668380b638287",
+    "nominal_sources": 22,
+    "broad_search_values": 14,
+    "interpolation": "lines only connect saved points; no thresholds or population medians",
+    "stress_source": "excluded from nominal plot and reported separately in manuscript",
+    "additional_checks": "data/additional_broad_checks.csv",
+    "new_waveform_or_search_runs": 0,
+    "layout": "One common-axis plot with a low-eccentricity inset",
+    "observable": "Percentage of expected optimal SNR not recovered: 100*(1-overlap)",
+    "plot_driver": "tools/plot_eccentricity_effects.py",
+    "plot_manifest": "eccentricity_figure_manifest.json"
+  },
+  "source_validation_and_timing": {
+    "input": "data/pyefpe_source_validation.csv",
+    "sha256": "ae2301888fab25650f300f40f699dfc3c17b0b81596986e688ca0e03ceaa0a05",
+    "duration_s": 31557600,
+    "dt_s": 2.5,
+    "accuracy_scope": "raw two-polarization sampled relative L2; no detector weighting",
+    "timing_scope": "common Newtonian/Peters source only; eGB median of 3 full calls, pyEFPE one complete prepared-model harmonic reconstruction",
+    "new_waveform_or_search_runs": 0
+  }
+}

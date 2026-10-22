@@ -1,0 +1,41 @@
+{
+  "version": "0.1.1",
+  "figures": 6,
+  "nominal_sources": 22,
+  "broader_search_results": 14,
+  "input_sha256": {
+    "additional_broad_checks.csv": "8738ad7bb01c6862d5cec9882f26a6c4c02b30fc7ee7e2af067ebd738cd7549b",
+    "annual_covariance_plot.npz": "7e50bf943661206810886eaeb45e0644692e250d29a88a0cfd709c68e4a5e1e0",
+    "jaxgb_circular_validation.csv": "5c1c66c262df86436122c087595e7b9401015fc0370144c0fdb7059b4a771bc3",
+    "metric_controls.csv": "c17b9b681d9aef09e3ed2eb6b6bc7cb5b52d6d5093130233c6a11cb921465a9a",
+    "periastron_envelope.npz": "2d53200b5c2f7532030f04703f196e19907e7f042bf05077e7fd8b7b21c5cb28",
+    "pm_rate_data.csv": "cb13c29d39dece8a30a163bb81cdcd420c26e73a5e31cce6637b63037cfb230d",
+    "pyefpe_source_validation.csv": "ae2301888fab25650f300f40f699dfc3c17b0b81596986e688ca0e03ceaa0a05",
+    "representative_sources_updated.csv": "a5b00f9058ce64b76a860aee68a981f7518c38902479b168992668380b638287",
+    "source_generation.json": "9403b93c4a5c5159ba3e238fde70466ffdd7c29d70db9b2f6fcebf3c518d21e7",
+    "source_harmonics.npz": "1312213b41027d881f66654ea554a4f797631f97a3278de9c5b0037161979a53"
+  },
+  "reference_png_sha256": {
+    "annual_covariance.png": "37e1ce1aa9364e6f60c1db197814c0b8c84bd76cf6b28dfa006c95ca77e17934",
+    "periastron_envelope.png": "c80f9cad40215771710962d23cd243ed5dde45f6d99ab8455b0730da1e1a8666",
+    "pm_rates.png": "bc6963f65b33c8cf23d99852a3083185d9d71e3c423f939e6426ce30d616d082",
+    "restricted_eccentricity_effects.png": "580b70d61042451270b1524e5ec89bb1e7f45fef9dd2665d1a5880d68f846ad9",
+    "source_harmonics.png": "b4a34a432834ef8ec06ede3dd0b14c07ae07e50143ee4d35418972df64b3fb91",
+    "source_validation_and_timing.png": "d7d557d43aa086355918628545d7283a540559827932520435b2f4dc0854fa78"
+  },
+  "reference_pdf_sha256": {
+    "annual_covariance.pdf": "d410990dcafd1cf9e09337533136595f434dd7fbc6d7e6ada957c38a74ee4f52",
+    "periastron_envelope.pdf": "4bc094ab410d71029e8136608e13d4245fc2612665bb471c962cf223fcba62eb",
+    "pm_rates.pdf": "9c0e6a17642e4953c63d93d80447348fbd1aa6fdf1bd26e17c977d03224b25b0",
+    "restricted_eccentricity_effects.pdf": "66ce36c4a33a3e9c2ebb4fd3c3a5b3c66adc9b5ae54e4cc4920247cb30491429",
+    "source_harmonics.pdf": "eb10b19595985c112a1aaaba5d9c85d4997e358fa28852d6f2448915bf37885f",
+    "source_validation_and_timing.pdf": "d9090198e7ca3a668b8e84d2678f216b4fd78b7df44bd3193997f41df804d4a4"
+  },
+  "annual_covariance_sha256": "91b3532044829b76257be4256add471dcac210a2f5041a9d285a1fb6227d5345",
+  "source_plot_data": "Recalculated from the unchanged source implementation; period, cadence diagnostic and rate CSV agree with recorded values.",
+  "source_scope": "Synthetic point masses; quadrupole polarizations with selected Newtonian/1PN orbit; initial Peters rates are not a complete inspiral.",
+  "recovery_scope": "Restricted nine-chirp family with physical orientation and phase; selected finite broader searches do not certify a global fitting factor.",
+  "comparison_scope": "JAXGB shared-source/link and native TDI differ; pyEFPE shared leading physics and different PN models are separate.",
+  "timings": "Recorded one-year source-polarization measurements; no detector-response speed comparison.",
+  "data_catalogue_policy": "Only plotted source samples and aggregate envelopes are stored, not annual waveform catalogues."
+}

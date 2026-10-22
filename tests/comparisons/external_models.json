@@ -1,0 +1,17 @@
+{
+  "jaxgb": {
+    "repository": "https://gitlab.com/lisamission/jaxgb",
+    "commit": "89d9d94f0f30c2c6d68dfdfffa4e40bbd52c6eae",
+    "distribution_version": "0.2.1.post8+89d9d94"
+  },
+  "pyefpe": {
+    "repository": "https://github.com/gmorras/pyEFPE",
+    "release": "v1.0.0",
+    "commit": "5b6964c0002893083c69f3ccdd687eb8b5d60e76",
+    "distribution_metadata_version": "0.0"
+  },
+  "upstream_modified": false,
+  "native_pyefpe_time_domain_api": false,
+  "adapter": "tests/comparisons/pyefpe_check.py:release_time_domain",
+  "optional_for_saved_data_replay": true
+}

@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Please cite the software version or commit used, together with the eGB-multi manuscript."
+title: eGB-multi
+type: software
+version: 0.1.1
+authors:
+  - family-names: Tiwari
+    given-names: Shubhanshu
+repository-code: "https://github.com/shubha89/eGB-multi"
+abstract: "Eccentric Galactic-binary source models, retarded LISA links, time-domain TDI, and explicitly scoped waveform comparisons."

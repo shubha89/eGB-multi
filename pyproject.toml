@@ -1,20 +1,28 @@
 [build-system]
-requires = ["setuptools>=69"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "egb-multi"
-version = "0.1.0"
-description = "Numerical experiments for tri-linear LISA response models and eccentric binary extensions."
-requires-python = ">=3.11"
+version = "0.1.1"
+description = "Eccentric Galactic-binary source models and time-domain LISA/TDI responses."
+readme = "README.md"
+requires-python = ">=3.12"
+license-files = ["LICENSE"]
+authors = [{name = "Shubhanshu Tiwari"}]
 dependencies = [
     "numpy>=2.0",
-    "scipy>=1.11",
+    "scipy>=1.13",
     "jax[cpu]>=0.10",
     "pytdi>=2.1",
 ]
 
+[project.urls]
+Repository = "https://github.com/shubha89/eGB-multi"
+Issues = "https://github.com/shubha89/eGB-multi/issues"
+
 [project.optional-dependencies]
+paper = ["matplotlib>=3.8", "pypdf>=6.10", "reportlab>=4.4"]
 realistic = [
     "fastgb>=0.0.2",
     "lisaorbits>=3.0",
@@ -34,6 +42,9 @@ precision = [
 orbits = [
     "lisaorbits>=3.0",
 ]
+analysis = [
+    "matplotlib>=3.8",
+]
 notebook = [
     "ipykernel>=6",
     "jupyterlab>=4",
@@ -44,5 +55,5 @@ notebook = [
 where = ["src"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests/unit"]
 pythonpath = ["src"]
