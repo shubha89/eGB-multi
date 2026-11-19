@@ -21,6 +21,7 @@ from .eccentric import (
     select_peters_mathews_evolution_mode,
 )
 from .geometry import LISAState
+from .phase import _phase_backend
 
 JAX_LINKS: tuple[tuple[int, int], ...] = (
     (0, 1),
@@ -329,6 +330,23 @@ def sideband_candidate_arrays(
 
 if jax is not None:
 
+    @jax.custom_jvp
+    def _periodic_phase_jax(rate, times, t0, phase0, rate_dot):
+        return _phase_backend(rate, times, t0, phase0, rate_dot, jnp,
+                              jax.lax.optimization_barrier, quadratic=True)
+
+    @_periodic_phase_jax.defjvp
+    def _periodic_phase_jax_jvp(primals, tangents):
+        rate, times, t0, phase0, rate_dot = primals
+        drate, dtimes, dt0, dphase0, drate_dot = tangents
+        angle = _periodic_phase_jax(*primals)
+        delta = times - t0
+        # Differentiate the physical phase law, not the bookkeeping used for
+        # error-free floating-point products or argument reduction.
+        tangent = (delta * drate + (rate + rate_dot * delta) * (dtimes - dt0)
+                   + dphase0 + 0.5 * delta**2 * drate_dot)
+        return angle, tangent
+
     def _mikkola_kepler_jax(mean_anomaly, eccentricity):
         wrapped = (mean_anomaly + jnp.pi) % (2.0 * jnp.pi) - jnp.pi
         offset = mean_anomaly - wrapped
@@ -370,10 +388,10 @@ if jax is not None:
         one_minus_e2 = 1.0 - eccentricity * eccentricity
         x0 = (gm * azimuthal_frequency0 / C_M_PER_S**3) ** (2.0 / 3.0)
         k0 = 3.0 * x0 / one_minus_e2 if include_periastron_advance else 0.0
-        radial_frequency0 = azimuthal_frequency0 * (1.0 - k0)
+        radial_frequency0 = azimuthal_frequency0 * jax.lax.optimization_barrier(1.0 - k0)
         radial_frequency_dot = azimuthal_frequency_dot * (1.0 - k0)
         radial_frequency_eff = radial_frequency0 + radial_frequency_dot * dt
-        mean_anomaly = radial_frequency0 * dt + 0.5 * radial_frequency_dot * dt**2
+        mean_anomaly = _periodic_phase_jax(radial_frequency0, times, t0, 0.0, radial_frequency_dot)
         u = _mikkola_kepler_jax(mean_anomaly, eccentricity)
         one_minus_ecosu = 1.0 - eccentricity * jnp.cos(u)
         sqrt_one_minus_e2 = jnp.sqrt(one_minus_e2)
@@ -429,11 +447,8 @@ if jax is not None:
         w = v_minus_u + eccentricity * jnp.sin(u)
         if include_1pn_orbital_corrections:
             w = w + x * 3.0 * (eccentricity * jnp.sin(u) + v_minus_u) / one_minus_e2
-        lam = (
-            azimuthal_frequency0 * dt + 0.5 * azimuthal_frequency_dot * dt**2 + phi0
-            if include_periastron_advance
-            else mean_anomaly + phi0
-        )
+        lam = _periodic_phase_jax(azimuthal_frequency0, times, t0, phi0,
+                                  azimuthal_frequency_dot)
         phi = lam + w
         phidot = (
             azimuthal_frequency_eff

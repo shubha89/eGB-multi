@@ -1,0 +1,35 @@
+{
+  "source": "experiments/xtdi/package/src in the local qualified development tree",
+  "component_version": "0.1.1.dev2",
+  "files": {
+    "lisa_stride/__init__.py": "6289019e7efb96f823b68d5b113723ce9536e0857f965c604a7a9840f01f2839",
+    "lisa_stride/batching.py": "b48255883f8c1314d6683fbfb79b3de61712a3f6453a68773767ab3ff5bac569",
+    "lisa_stride/sampled.py": "922970a2df44cdf63d231a03bce2d7cc6aa97f7bb45a15ca489a88b47c9b5497",
+    "xtdi/__init__.py": "76a16db4fa3b4758d1e7c65a62d15cf8b94bddc1a7ecc4fde0a7493d40b93176",
+    "xtdi/_dot_policy.py": "4e87056b377640039020d6bb9acfdb00abe493c73b2c6c8f8e3f5c1d05bd9183",
+    "xtdi/_host_stream.py": "d583d0e0b3db5273945066767f51991f6c11b24b731c04a42e4b2b58066d80c4",
+    "xtdi/adapters/__init__.py": "13040304b0bb8f01001b0a4d421bc87b4c81a0f56bab6a3332a1c6333143b74b",
+    "xtdi/adapters/egb.py": "b1ea6a95862b5d88db9e3bc0e5a50ce946f25329ca52cfcff977ad616665deef",
+    "xtdi/adapters/sampled.py": "937f77357880b1697e1d985cce7254c7a18e9a32c218527733c9cc55d3d306ce",
+    "xtdi/common.py": "cf917450c73c17182a798ee49631fb2b4ebbf201fdc2eca042c3851e22896238",
+    "xtdi/delay.py": "a7203ae8b12bb305cf34fcfec8b957f71756b309d3198dcb437ae17f07fcb006",
+    "xtdi/inference.py": "85ad30b8108b2ca40789ee61a9cb9f6d4d5ccddc8b5111330d859cc32ace0f1c",
+    "xtdi/jax_backend.py": "e3c283ac2ed73b62a2d194bdda1cbec0ab65b08a2cf9d62d918442c92679d9bf",
+    "xtdi/jax_response.py": "9962be5049548f9ba95d34d40f87ae901181832f76e37a23969024dadce04d6d",
+    "xtdi/michelson.py": "5cc7717bf797372c600f1ee0bcd6f96080e96e15ed89c276104997fd7bbe036f",
+    "xtdi/optimized/__init__.py": "951292074195ddc325ef82a8c8fef5d4fd3287d26ba1e0d4494eeea27fb14ccf",
+    "xtdi/optimized/_application.py": "ced9101da929645ab66e39e614952e3323170cde35246318c0fc9128b40d80c3",
+    "xtdi/optimized/_interpolation.py": "0dede7a7db70549ab593bbe54f6c21f0083af3b41cf115ad86069bca1f261cf9",
+    "xtdi/optimized/_parallel.py": "e6802d44e2e8a3ef322a86c32d3591762330c860a19c6f7e3ba373f982bbe1a7",
+    "xtdi/optimized/_preparation.py": "c7dc14f486c6944985a7b848f602508e4467b3e2aa686744c11eb279436e1ae0",
+    "xtdi/optimized/_prepare_parallel.py": "24c9e8f0cc57e937d2d7b5cc4585175ceee879bdb852b406339a16b03c0daee8",
+    "xtdi/optimized/_sky.py": "0804f5818b8a0c17de5f39667af3071dc2746faf223c7474f8ab21a3eb1c2b1b",
+    "xtdi/optimized/_stencils.py": "7f2a123fa976b2e80c0082668223b2d32a3e546ceb9e609312414f81194ef002",
+    "xtdi/optimized/links.py": "62879d6494310e43f51bc9391788a8acc20d62020b7aef81a2d53f4abc0323a1",
+    "xtdi/streaming.py": "a67fd5eab8d32085b69656538a093dc105d15526e43bbaabf1a8e71639d24eee"
+  },
+  "integration_only_changes": [
+    "lisa_stride/__init__.py and xtdi/__init__.py: optional installation hint names the combined egb-multi distribution",
+    "xtdi/common.py: remove one final blank line"
+  ]
+}

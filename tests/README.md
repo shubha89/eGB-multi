@@ -7,6 +7,7 @@ programs are grouped here.
 | Directory | Purpose | Runs in the default pytest command? |
 | --- | --- | --- |
 | `unit/` | Library regressions and safe reference-data restoration | Yes |
+| `stride/` | STRIDE JAX/Numba, delay, pyTDI and eGB-adapter reference suite | Explicit command |
 | `helpers/` | Independent direct-link reference used by a unit test | Imported by that test |
 | `comparisons/` | Optional JAXGB and pyEFPE comparisons | No |
 | `benchmarks/` | Explicit source and prepared-response timing studies | No |
@@ -15,6 +16,8 @@ programs are grouped here.
 ```sh
 python -m pip install ".[orbits,analysis,test,precision]"
 python -m pytest
+python -m pip install ".[test,cpu,orbits]"
+python -m pytest tests/stride
 ```
 
 The pinned macOS arm64/Python 3.13 reference environment is recorded in
@@ -31,4 +34,6 @@ Historical referee campaign controllers, scheduling experiments, planning notes
 and obsolete benchmark outputs are retained in the local project archive and
 are excluded from this release. The retained library tests have not been replaced
 by a smaller numerical model. Scientific data and the 39 library/compatibility
-module payloads are unchanged by the directory cleanup.
+module payloads were unchanged by the v0.1.1 directory cleanup. The current
+development update additionally bundles STRIDE and the qualified source-phase
+arithmetic repair; see RELEASE_NOTES.md.

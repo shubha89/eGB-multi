@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from decimal import Decimal, localcontext
 
 import egb_multi.eccentric as eccentric_module
 from egb_multi.constants import C_M_PER_S, G_M3_KG_S2
@@ -303,6 +304,25 @@ def test_peters_mathews_evolution_changes_frequency_and_eccentricity():
     assert np.linalg.norm(evolved - fixed) > 0.0
 
 
+def _bounded_mean_anomaly(source, times):
+    # Independent decimal multiplication/reduction for the analytic references.
+    # Evaluating sin at a rounded unwrapped 2*pi gives a spurious radial
+    # velocity at the last sample and loses the original binary64 n*t residual.
+    period = Decimal("6.2831853071795864769252867665590057683943387987502116419498891846156")
+    result = []
+    with localcontext() as context:
+        context.prec = 65
+        for time in times:
+            delta = Decimal.from_float(float(time))-Decimal.from_float(source.t0)
+            phase = Decimal.from_float(source.mean_motion)*delta % period
+            if phase > period/2:
+                phase -= period
+            if phase < -period/2:
+                phase += period
+            result.append(float(phase))
+    return np.array(result)
+
+
 def test_newtonian_dynamics_match_keplerian_parametric_solution():
     source = EccentricBinaryParams(
         mean_motion=np.pi * 1.0e-3,
@@ -317,13 +337,14 @@ def test_newtonian_dynamics_match_keplerian_parametric_solution():
 
     gm = G_M3_KG_S2 * source.total_mass_kg
     mean_anomaly = source.mean_motion * (t - source.t0)
-    u = mikkola_kepler(mean_anomaly, source.eccentricity)
+    bounded_mean = _bounded_mean_anomaly(source, t)
+    u = mikkola_kepler(bounded_mean, source.eccentricity)
     one_minus_ecosu = 1.0 - source.eccentricity * np.cos(u)
     one_minus_e2 = 1.0 - source.eccentricity**2
     semimajor_axis = (gm / source.mean_motion**2) ** (1.0 / 3.0)
     beta_phi = (1.0 - np.sqrt(one_minus_e2)) / source.eccentricity
     v_minus_u = np.unwrap(2.0 * np.arctan2(beta_phi * np.sin(u), 1.0 - beta_phi * np.cos(u)))
-    expected_phi = source.phi0 + u + v_minus_u
+    expected_phi = source.phi0 + mean_anomaly + (u-bounded_mean) + v_minus_u
 
     assert np.allclose(dynamics["r"], semimajor_axis * one_minus_ecosu, rtol=1.0e-14)
     assert np.allclose(
@@ -352,7 +373,7 @@ def test_1pn_no_periastron_dynamics_match_tanay_coefficients():
     eta = source.symmetric_mass_ratio
     e = source.eccentricity
     mean_anomaly = source.mean_motion * (t - source.t0)
-    u = mikkola_kepler(mean_anomaly, e)
+    u = mikkola_kepler(_bounded_mean_anomaly(source, t), e)
     nu = 1.0 - e * np.cos(u)
     one_minus_e2 = 1.0 - e * e
     sqrt_one_minus_e2 = np.sqrt(one_minus_e2)

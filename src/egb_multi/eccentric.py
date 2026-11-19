@@ -18,6 +18,7 @@ from scipy.integrate import solve_ivp
 
 from .constants import C_M_PER_S, G_M3_KG_S2, KILOPARSEC_M, SOLAR_MASS_KG
 from .tensors import matrix_to_tracefree5, normalize_direction
+from .phase import periodic_linear_phase, periodic_phase
 
 
 @dataclass(frozen=True)
@@ -948,8 +949,22 @@ def eccentric_dynamics(
     x_full = _pn_x_from_azimuthal_frequency(gm, omega)
     x = x_full if options.include_1pn_orbital_corrections else 0.0
 
-    u = mikkola_kepler(mean_anomaly, e)
-    one_minus_ecosu = 1.0 - e * np.cos(u)
+    # Preserve the public unwrapped angles, but evaluate periodic orbital
+    # quantities before rounding a large accumulated phase. The ODE/source
+    # physics and initial conditions are unchanged.
+    if evolution_mode == 'fixed':
+        mean_periodic = periodic_linear_phase(n, tt, t0=source.t0)
+        lam_periodic = periodic_linear_phase(omega, tt, t0=source.t0, phase0=source.phi0)
+    else:
+        mean_periodic = periodic_phase(mean_anomaly)
+        if evolution_mode == 'peters_mathews_eccentricity_only':
+            lam_periodic = periodic_linear_phase(omega0, tt, t0=source.t0, phase0=source.phi0)
+        else:
+            lam_base = evolution['integrated_phase'] if options.include_periastron_advance else mean_anomaly
+            lam_periodic = periodic_phase(lam_base, offset=source.phi0)
+    u_periodic = mikkola_kepler(mean_periodic, e)
+    u = mean_anomaly + (u_periodic - mean_periodic)
+    one_minus_ecosu = 1.0 - e * np.cos(u_periodic)
     one_minus_e2 = 1.0 - e * e
     sqrt_one_minus_e2 = np.sqrt(one_minus_e2)
 
@@ -967,7 +982,7 @@ def eccentric_dynamics(
             C_M_PER_S
             * np.sqrt(x_full)
             * e
-            * np.sin(u)
+            * np.sin(u_periodic)
             / one_minus_ecosu
             * (1.0 + x * rdot_1pn)
         )
@@ -975,15 +990,16 @@ def eccentric_dynamics(
     else:
         semimajor_scale = (gm / n**2) ** (1.0 / 3.0)
         r = semimajor_scale * one_minus_ecosu
-        rdot = e * (gm * n) ** (1.0 / 3.0) * np.sin(u) / one_minus_ecosu
+        rdot = e * (gm * n) ** (1.0 / 3.0) * np.sin(u_periodic) / one_minus_ecosu
         phidot_1pn = 0.0
 
     beta_phi = _safe_beta_phi_1pn(eta, e, x)
-    v_minus_u = _v_minus_u_from_beta(u, beta_phi)
-    w = v_minus_u + e * np.sin(u)
+    v_minus_u = _v_minus_u_from_beta(u_periodic, beta_phi)
+    w = v_minus_u + e * np.sin(u_periodic)
     if options.include_1pn_orbital_corrections:
-        w = w + x * 3.0 * (e * np.sin(u) + v_minus_u) / one_minus_e2
+        w = w + x * 3.0 * (e * np.sin(u_periodic) + v_minus_u) / one_minus_e2
     phi = lam + w
+    phi_periodic = lam_periodic + w
     phidot = (
         omega
         * sqrt_one_minus_e2
@@ -996,6 +1012,7 @@ def eccentric_dynamics(
         "r": r,
         "rdot": rdot,
         "phi": phi,
+        "phi_periodic": phi_periodic,
         "phidot": phidot,
         "mean_anomaly": mean_anomaly,
         "radial_mean_motion": n,
@@ -1034,7 +1051,7 @@ def eccentric_polarizations(
 
     r = dyn["r"]
     rdot = dyn["rdot"]
-    phi = dyn["phi"]
+    phi = dyn["phi_periodic"]
     phidot = dyn["phidot"]
 
     cos_i = np.cos(source.inclination)

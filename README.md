@@ -4,6 +4,9 @@ Eccentric Galactic-binary waveforms and time-domain LISA responses. The package
 provides Newtonian and conservative 1PN orbital dynamics, optional leading
 Peters–Mathews evolution, six retarded Doppler links, and pyTDI Michelson XYZ/AET.
 JAX link generation and reusable geometry support repeated source evaluations.
+STRIDE is included in this repository and installation: its `lisa_stride`
+interface evaluates sampled polarizations, six links and ordered TDI with JAX.
+An optional Numba CPU backend and a fastlisaresponse example are also provided.
 
 ## Installation
 
@@ -12,6 +15,7 @@ Use Python 3.12 or newer:
 ```sh
 python -m pip install ".[orbits,analysis]"
 python examples/smoke_xyz.py
+python examples/egb_stride.py
 ```
 
 The library is installed from `src/`. Tests, model comparisons and research
@@ -48,6 +52,35 @@ and [one-year example](examples/notebooks/one_year_prepared_xyz.ipynb) show how 
 reuse retarded geometry and pyTDI operators across sources and data blocks.
 Rebuild these caches when the orbit, time grid or interpolation settings change.
 
+For STRIDE, [the eGB example](examples/egb_stride.py) uses the existing retarded
+orbit geometry and includes the source polarization angle once. Its detector
+cache is reusable when intrinsic or sky parameters change; sky-dependent
+quantities are recomputed on every call.
+
+```sh
+python -m pip install ".[orbits,cpu]"
+python examples/egb_stride.py --backend jax --source-backend jax
+python examples/egb_stride.py --backend numba
+python examples/egb_stride.py --evolution peters_mathews --source-backend numpy
+```
+
+The [STRIDE guide](docs/stride.md) describes array interfaces, geometry, ordered
+delays, precision, batching, streaming and cache ownership. Import directly
+from `lisa_stride`, or use the eGB adapters in `egb_multi.stride`.
+The historical `xtdi` namespace remains available.
+
+To use the optional upstream fastlisaresponse engine:
+
+```sh
+python -m pip install ".[fastlisa]"
+python examples/egb_fastlisaresponse.py --compare-stride
+```
+
+The [fastlisaresponse guide](docs/fastlisaresponse.md) explains CPU/CUDA
+installation, polarization and output conventions, padding and orbit support.
+Both examples default to 4096 retained samples and print a scalar summary.
+Use `--output outputs/example.npz` to save their waveform.
+
 The canonical import namespace is `egb_multi`. The historical
 `egb_jax_eccentric` convenience interface remains available for compatibility.
 
@@ -63,6 +96,8 @@ tests/     Unit tests, optional model comparisons, benchmarks and paper reproduc
 To run the library tests, install `.[orbits,analysis,test,precision]` and run
 `python -m pytest`. External comparisons and annual benchmarks run only when
 explicitly invoked; see the instructions under `tests/`.
+The full STRIDE reference suite is under `tests/stride/`; install
+`.[test,cpu,orbits]` and run `python -m pytest tests/stride`.
 
 The paper's data are distributed separately. [The paper guide](tests/paper/README.md)
 documents restoration and figure reproduction. No PDFs, manuscript drafts or
