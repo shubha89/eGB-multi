@@ -6,6 +6,11 @@ STRIDE is included in the `egb-multi` distribution; the primary Python interface
 sampled source interpolation, six GW links and ordered Michelson TDI. Numba is
 an optional CPU backend. The legacy `xtdi` CPU interface remains available.
 
+For an executed source-to-response walkthrough, open the
+[STRIDE and fastlisaresponse usage notebook](../examples/notebooks/stride_fastlisaresponse_usage.ipynb).
+It includes source/XYZ plots, changed-sky detector reuse and a same-input
+native comparison with an explicit residual.
+
 
 ## Install
 

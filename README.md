@@ -81,6 +81,15 @@ installation, polarization and output conventions, padding and orbit support.
 Both examples default to 4096 retained samples and print a scalar summary.
 Use `--output outputs/example.npz` to save their waveform.
 
+The executed [STRIDE and fastlisaresponse usage notebook](examples/notebooks/stride_fastlisaresponse_usage.ipynb)
+walks through source polarizations, retarded STRIDE XYZ, detector-cache reuse,
+and a same-input native comparison, with waveform and residual plots:
+
+```sh
+python -m pip install ".[orbits,notebook,fastlisa]"
+jupyter lab examples/notebooks/stride_fastlisaresponse_usage.ipynb
+```
+
 The canonical import namespace is `egb_multi`. The historical
 `egb_jax_eccentric` convenience interface remains available for compatibility.
 

@@ -5,6 +5,10 @@ It uses the installed eGB source, upstream `pyResponseTDI`, and the bundled
 STRIDE interface when `--compare-stride` is selected. It imports no research
 driver and needs no private data.
 
+The executed [usage notebook](../examples/notebooks/stride_fastlisaresponse_usage.ipynb)
+shows the same public interfaces step by step, together with source/XYZ
+plots, detector-cache reuse and a matched-geometry STRIDE comparison.
+
 ## Install and run on a CPU
 
 From the repository root, using Python 3.12 or later:
