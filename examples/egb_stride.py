@@ -33,7 +33,7 @@ def main():
     tick = time.perf_counter()
     sampled = sampled_polarizations(
         source, source_times, physics_mode="1pn", evolution_mode=args.evolution,
-        source_backend=args.source_backend, device=args.device,
+        pm_sampling=args.pm_sampling, source_backend=args.source_backend, device=args.device,
     )
     jax.block_until_ready(sampled.values)
     source_s = time.perf_counter()-tick
@@ -48,7 +48,7 @@ def main():
     finish(args, times, xyz, dict(
         engine="STRIDE", response_backend=args.backend, device=args.device,
         source_backend=args.source_backend, source_parameters=asdict(source),
-        physics_mode="1pn", evolution_mode=args.evolution,
+        physics_mode="1pn", evolution_mode=args.evolution, pm_sampling=args.pm_sampling,
         geometry="esa-trailing; ecliptic; retarded emitter",
         source_order=39, tdi_order=25, setup_s=setup_s,
         source_s=source_s, first_response_s=response_s,

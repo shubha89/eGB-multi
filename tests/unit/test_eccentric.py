@@ -300,6 +300,7 @@ def test_peters_mathews_evolution_changes_frequency_and_eccentricity():
 
     assert evolution["mean_motion"][-1] > evolution["mean_motion"][0]
     assert evolution["eccentricity"][-1] < evolution["eccentricity"][0]
+    np.testing.assert_array_equal(eccentric_complex_strain(source, t), evolved)
     assert np.all(np.isfinite(evolved))
     assert np.linalg.norm(evolved - fixed) > 0.0
 
@@ -333,7 +334,7 @@ def test_newtonian_dynamics_match_keplerian_parametric_solution():
     )
     t = source.t0 + np.linspace(0.0, 2.0 * np.pi / source.mean_motion, 256)
 
-    dynamics = eccentric_dynamics(source, t, physics_mode="newtonian")
+    dynamics = eccentric_dynamics(source, t, physics_mode="newtonian", evolution_mode="fixed")
 
     gm = G_M3_KG_S2 * source.total_mass_kg
     mean_anomaly = source.mean_motion * (t - source.t0)
@@ -367,7 +368,7 @@ def test_1pn_no_periastron_dynamics_match_tanay_coefficients():
     )
     t = source.t0 + np.linspace(0.0, 2.0 * np.pi / source.mean_motion, 256)
 
-    dynamics = eccentric_dynamics(source, t, physics_mode="1pn_no_periastron")
+    dynamics = eccentric_dynamics(source, t, physics_mode="1pn_no_periastron", evolution_mode="fixed")
 
     gm = G_M3_KG_S2 * source.total_mass_kg
     eta = source.symmetric_mass_ratio
@@ -418,7 +419,7 @@ def test_circular_newtonian_polarizations_match_quadrupole_limit():
     )
     t = np.linspace(0.0, 10_000.0, 128)
 
-    h_plus, h_cross = eccentric_polarizations(source, t, physics_mode="newtonian")
+    h_plus, h_cross = eccentric_polarizations(source, t, physics_mode="newtonian", evolution_mode="fixed")
 
     gm = G_M3_KG_S2 * source.total_mass_kg
     orbital_velocity_squared = (gm * source.mean_motion) ** (2.0 / 3.0)

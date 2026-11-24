@@ -54,13 +54,13 @@ def test_jax_phase_and_analytic_jvp():
 
 
 @pytest.mark.parametrize('eccentricity',[0.,.1,.6])
-def test_numpy_jax_long_epoch_source_agreement(eccentricity):
+def test_numpy_jax_fixed_long_epoch_source_agreement(eccentricity):
     pytest.importorskip('jax')
     from egb_multi.eccentric import EccentricBinaryParams,eccentric_complex_strain
     from egb_multi.eccentric_jax import eccentric_complex_strain_batch_jax
     source=EccentricBinaryParams(mean_motion=np.pi*.003,eccentricity=eccentricity,
         m1_solar=1.1,m2_solar=.4,phi0=.7,inclination=.9)
     times=27612900.+np.arange(500)*1.25+.13
-    expected=eccentric_complex_strain(source,times)
-    actual=np.asarray(eccentric_complex_strain_batch_jax(source,times))[0]
+    expected=eccentric_complex_strain(source,times,evolution_mode="fixed")
+    actual=np.asarray(eccentric_complex_strain_batch_jax(source,times,evolution_mode="fixed"))[0]
     assert np.linalg.norm(actual-expected)/np.linalg.norm(expected)<3e-12

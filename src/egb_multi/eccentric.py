@@ -192,6 +192,8 @@ ECCENTRIC_PHYSICS_MODES: dict[str, EccentricPhysicsOptions] = {
     "1pn_periastron": EccentricPhysicsOptions(True, True),
 }
 
+DEFAULT_ECCENTRIC_EVOLUTION = "peters_mathews"
+
 ECCENTRIC_EVOLUTION_MODES = (
     "fixed",
     "peters_mathews",
@@ -865,7 +867,7 @@ def eccentric_dynamics(
     t: ArrayLike,
     *,
     physics_mode: str | EccentricPhysicsOptions = "1pn",
-    evolution_mode: str = "fixed",
+    evolution_mode: str = DEFAULT_ECCENTRIC_EVOLUTION,
     pm_mismatch_tolerance: float = 1.0e-2,
     pm_switch_rule: PetersMathewsSwitchRule | None = None,
     pm_ode_rtol: float = 1.0e-10,
@@ -1025,7 +1027,7 @@ def eccentric_polarizations(
     t: ArrayLike,
     *,
     physics_mode: str | EccentricPhysicsOptions = "1pn",
-    evolution_mode: str = "fixed",
+    evolution_mode: str = DEFAULT_ECCENTRIC_EVOLUTION,
     pm_mismatch_tolerance: float = 1.0e-2,
     pm_switch_rule: PetersMathewsSwitchRule | None = None,
     pm_ode_rtol: float = 1.0e-10,
@@ -1078,7 +1080,7 @@ def eccentric_complex_strain(
     t: ArrayLike,
     *,
     physics_mode: str | EccentricPhysicsOptions = "1pn",
-    evolution_mode: str = "fixed",
+    evolution_mode: str = DEFAULT_ECCENTRIC_EVOLUTION,
     pm_mismatch_tolerance: float = 1.0e-2,
     pm_switch_rule: PetersMathewsSwitchRule | None = None,
 ) -> NDArray[np.complex128]:

@@ -30,13 +30,13 @@ when a wheel is unavailable. The optional dependency is not needed to import
 eGB or STRIDE. Its upstream dependencies include Numba.
 
 The default is one 4096-sample output at 2.5 s cadence, with conservative 1PN
-orbital dynamics, periastron advance and PM evolution off. The initial
+orbital dynamics, periastron advance and Peters–Mathews evolution. The initial
 `mean_motion / pi` is 3 mHz and eccentricity is 0.1. This frequency scale is
 an orbital-parameter label; an eccentric source has multiple radiative
-harmonics. To include Peters--Mathews evolution:
+harmonics. For a fixed-element comparison:
 
 ```sh
-python examples/egb_fastlisaresponse.py --evolution peters_mathews --source-backend numpy
+python examples/egb_fastlisaresponse.py --evolution fixed --source-backend jax
 ```
 
 ## What the example computes
@@ -111,9 +111,9 @@ python examples/egb_fastlisaresponse.py --backend cuda12x --source-backend jax -
 ```
 
 The example requests an actual JAX GPU and native CUDA backend; it does not
-silently fall back to CPU. Fixed-element eGB strain stays on the GPU and is
-shared with CuPy using DLPack. PM-evolving eGB uses the CPU source and an
-explicit transfer. Both routes use float64; CUDA timings and accuracy must
+silently fall back to CPU. Fixed and full-PM eGB polarizations can use the JAX source and
+share its device arrays with CuPy using DLPack. Selecting the NumPy source
+uses an explicit transfer. Both routes use float64; CUDA timings and accuracy must
 be checked on the actual hardware. This repository integration launches no
 cloud compute.
 

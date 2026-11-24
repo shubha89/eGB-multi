@@ -1,5 +1,9 @@
 # eGB-multi 0.1.2.dev0
 
+Time-domain eccentric waveforms now default to full orbit-averaged Peters–Mathews
+evolution. Use `evolution_mode="fixed"` in Python or `--evolution fixed` in the
+STRIDE and fastlisaresponse examples to reproduce fixed-element runs.
+
 STRIDE is bundled in the normal eGB-multi installation, using the current
 JAX-first `lisa_stride` interface and retaining the historical `xtdi` namespace.
 The optional `cpu` extra enables its Numba implementation. Detector, source,

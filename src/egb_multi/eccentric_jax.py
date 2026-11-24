@@ -9,6 +9,7 @@ from numpy.typing import NDArray
 
 from .constants import C_M_PER_S, G_M3_KG_S2, KILOPARSEC_M, SOLAR_MASS_KG
 from .eccentric import (
+    DEFAULT_ECCENTRIC_EVOLUTION,
     EccentricBinaryParams,
     EccentricHarmonicComponent,
     PetersMathewsSwitchRule,
@@ -122,7 +123,7 @@ def resolve_response_evolution_modes(
     times: NDArray[np.float64],
     *,
     physics_mode: str = "1pn",
-    evolution_mode: str = "fixed",
+    evolution_mode: str = DEFAULT_ECCENTRIC_EVOLUTION,
     pm_mismatch_tolerance: float = 1.0e-2,
     pm_switch_rule: PetersMathewsSwitchRule | None = None,
 ) -> list[str]:
@@ -232,7 +233,7 @@ def _rotated_basis_numpy(source: EccentricBinaryParams) -> tuple[NDArray[np.floa
     return cosps * eplus - sinps * ecross, sinps * eplus + cosps * ecross
 
 
-def _evolved_eccentric_links_numpy(
+def _evolved_eccentric_links(
     sources: list[EccentricBinaryParams],
     evolution_modes: list[str],
     geometry: dict[str, NDArray[np.float64]],
@@ -260,14 +261,17 @@ def _evolved_eccentric_links_numpy(
         delay_receiver = times[None, :] - np.einsum("lti,i->lt", p_receiver_all, direction)
 
         query_times = np.concatenate((delay_sender.reshape(-1), delay_receiver.reshape(-1)))
-        hplus, hcross = eccentric_polarizations(
-            source,
-            query_times,
-            physics_mode=physics_mode,
-            evolution_mode=evolution_mode,
-            pm_ode_rtol=pm_ode_rtol,
-            pm_ode_phase_atol=pm_ode_phase_atol,
-        )
+        if evolution_mode == "peters_mathews":
+            from .pm_jax import prepare_pm, pm_strain
+            plan = prepare_pm(source, query_times.min(), query_times.max(), physics_mode=physics_mode,
+                              pm_ode_rtol=pm_ode_rtol, pm_ode_phase_atol=pm_ode_phase_atol)
+            strain = np.asarray(pm_strain(plan, query_times))
+            hplus, hcross = strain.real, -strain.imag
+        else:
+            hplus, hcross = eccentric_polarizations(
+                source, query_times, physics_mode=physics_mode, evolution_mode=evolution_mode,
+                pm_ode_rtol=pm_ode_rtol, pm_ode_phase_atol=pm_ode_phase_atol,
+            )
         split = delay_sender.size
         hplus_sender = hplus[:split].reshape(delay_sender.shape)
         hcross_sender = hcross[:split].reshape(delay_sender.shape)
@@ -378,6 +382,24 @@ if jax is not None:
         dt = times - t0
         azimuthal_frequency_dot = jnp.pi * fdot
         azimuthal_frequency_eff = azimuthal_frequency0 + azimuthal_frequency_dot * dt
+        gm = G_M3_KG_S2 * ((m1_solar + m2_solar) * SOLAR_MASS_KG)
+        one_minus_e2 = 1.0 - eccentricity * eccentricity
+        x0 = (gm * azimuthal_frequency0 / C_M_PER_S**3) ** (2.0 / 3.0)
+        k0 = 3.0 * x0 / one_minus_e2 if include_periastron_advance else 0.0
+        radial_frequency0 = azimuthal_frequency0 * jax.lax.optimization_barrier(1.0 - k0)
+        radial_frequency_dot = azimuthal_frequency_dot * (1.0 - k0)
+        radial_frequency_eff = radial_frequency0 + radial_frequency_dot * dt
+        mean_anomaly = _periodic_phase_jax(radial_frequency0, times, t0, 0.0, radial_frequency_dot)
+        lam = _periodic_phase_jax(azimuthal_frequency0, times, t0, phi0,
+                                  azimuthal_frequency_dot)
+        return _strain_from_orbit(params, radial_frequency_eff, azimuthal_frequency_eff,
+                                  eccentricity, mean_anomaly, lam,
+                                  include_1pn_orbital_corrections)
+
+    def _strain_from_orbit(params, radial_frequency_eff, azimuthal_frequency_eff,
+                           eccentricity, mean_anomaly, lam, include_1pn_orbital_corrections,
+                           *, unwrap=True):
+        _, _, m1_solar, m2_solar, distance_m, inclination, _, _, _ = params
         total_solar = m1_solar + m2_solar
         total_mass = total_solar * SOLAR_MASS_KG
         eta = m1_solar * m2_solar / total_solar**2
@@ -386,12 +408,6 @@ if jax is not None:
         x = x_full if include_1pn_orbital_corrections else 0.0
 
         one_minus_e2 = 1.0 - eccentricity * eccentricity
-        x0 = (gm * azimuthal_frequency0 / C_M_PER_S**3) ** (2.0 / 3.0)
-        k0 = 3.0 * x0 / one_minus_e2 if include_periastron_advance else 0.0
-        radial_frequency0 = azimuthal_frequency0 * jax.lax.optimization_barrier(1.0 - k0)
-        radial_frequency_dot = azimuthal_frequency_dot * (1.0 - k0)
-        radial_frequency_eff = radial_frequency0 + radial_frequency_dot * dt
-        mean_anomaly = _periodic_phase_jax(radial_frequency0, times, t0, 0.0, radial_frequency_dot)
         u = _mikkola_kepler_jax(mean_anomaly, eccentricity)
         one_minus_ecosu = 1.0 - eccentricity * jnp.cos(u)
         sqrt_one_minus_e2 = jnp.sqrt(one_minus_e2)
@@ -438,17 +454,15 @@ if jax is not None:
             beta_newtonian + x * beta_1pn,
             0.0,
         )
-        v_minus_u = jnp.unwrap(
-            2.0 * jnp.arctan2(
-                beta_phi * jnp.sin(u),
-                1.0 - beta_phi * jnp.cos(u),
-            )
+        v_minus_u = 2.0 * jnp.arctan2(
+            beta_phi * jnp.sin(u),
+            1.0 - beta_phi * jnp.cos(u),
         )
+        if unwrap:
+            v_minus_u = jnp.unwrap(v_minus_u)
         w = v_minus_u + eccentricity * jnp.sin(u)
         if include_1pn_orbital_corrections:
             w = w + x * 3.0 * (eccentricity * jnp.sin(u) + v_minus_u) / one_minus_e2
-        lam = _periodic_phase_jax(azimuthal_frequency0, times, t0, phi0,
-                                  azimuthal_frequency_dot)
         phi = lam + w
         phidot = (
             azimuthal_frequency_eff
@@ -1161,10 +1175,25 @@ def eccentric_complex_strain_batch_jax(
     times: NDArray[np.float64],
     *,
     physics_mode: str = "1pn",
+    evolution_mode: str = DEFAULT_ECCENTRIC_EVOLUTION,
 ) -> NDArray[np.complex128]:
     """Evaluate a batch of eccentric source strains with a JIT-compiled JAX kernel."""
 
     require_jax()
+    mode = eccentric_evolution_mode_label(evolution_mode)
+    if mode == "peters_mathews":
+        from .pm_jax import prepare_pm, pm_strain
+        grid = np.asarray(times, dtype=np.float64)
+        if grid.ndim != 1 or not grid.size or not np.isfinite(grid).all():
+            raise ValueError("PM strain requires a nonempty finite one-dimensional time grid")
+        start, end = grid.min(), grid.max()
+        t = jnp.asarray(grid)
+        return np.asarray(jnp.stack([
+            pm_strain(prepare_pm(source, start, end, physics_mode=physics_mode), t)
+            for source in _source_list(sources)
+        ]))
+    if mode != "fixed":
+        raise ValueError("the JAX strain API supports fixed or full Peters-Mathews evolution")
     params = pack_eccentric_sources(sources)
     include_1pn, include_periastron = _physics_switches(physics_mode)
     if include_1pn and include_periastron:
@@ -1185,7 +1214,7 @@ def eccentric_links_jax(
     *,
     batch_size: int = 1024,
     physics_mode: str = "1pn",
-    evolution_mode: str = "fixed",
+    evolution_mode: str = DEFAULT_ECCENTRIC_EVOLUTION,
     pm_mismatch_tolerance: float = 1.0e-2,
     pm_switch_rule: PetersMathewsSwitchRule | None = None,
     pm_ode_rtol: float = 1.0e-10,
@@ -1193,9 +1222,9 @@ def eccentric_links_jax(
 ) -> dict[str, NDArray[np.complex128]]:
     """Compute summed brute-force eccentric links with fixed-shape JAX batches.
 
-    Fixed sources use the compiled JAX kernel. Non-fixed Peters--Mathews modes
-    are evaluated at exact retarded times with the NumPy source model and added
-    to the same link dictionary.
+    Fixed and full-PM sources use JAX strain kernels. Full PM prepares one orbit
+    over all retarded queries per source. Partial-PM diagnostic modes use
+    the NumPy source. The returned link dictionary contains host arrays.
     """
 
     require_jax()
@@ -1252,7 +1281,7 @@ def eccentric_links_jax(
     out = np.asarray(total)
     links = {label: out[index] for index, label in enumerate(JAX_LINK_LABELS)}
     if evolved_sources:
-        evolved_links = _evolved_eccentric_links_numpy(
+        evolved_links = _evolved_eccentric_links(
             evolved_sources,
             evolved_modes,
             geometry,

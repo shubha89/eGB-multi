@@ -14,24 +14,24 @@ from lisa_stride import (
     xyz_to_aet,
 )
 from .eccentric import (
+    DEFAULT_ECCENTRIC_EVOLUTION,
     eccentric_evolution_mode_label, eccentric_physics_options,
     eccentric_polarizations,
 )
 
 __all__ = [
     "DetectorResponse", "SampledPolarizations", "StreamedDetectorResponse",
-    "TDIPlan", "xyz_to_aet", "sampled_polarizations", "geometry_from_lisaorbits",
+    "TDIPlan", "xyz_to_aet", "sampled_polarizations", "sampled_pm_uniform", "geometry_from_lisaorbits",
 ]
 
 
 def sampled_polarizations(source, times, *, physics_mode="1pn",
-                          evolution_mode="fixed", source_backend="numpy",
-                          device=None, order=39, **evolution_options):
+                          evolution_mode=DEFAULT_ECCENTRIC_EVOLUTION, source_backend="numpy",
+                          device=None, order=39, pm_sampling="direct", **evolution_options):
     """Generate one source on a uniform, caller-padded strain grid.
 
-    source_backend='jax' retains the fixed-element source on the chosen JAX
-    device. Peters--Mathews evolution uses the existing NumPy/SciPy source,
-    with one explicit transfer to the response device. This checked setup
+    source_backend='jax' retains fixed or full PM evolution on the chosen JAX
+    device. The NumPy backend uses the SciPy PM reference. This checked setup
     helper is outside an outer JIT; STRIDE's array interfaces compose under JIT.
 
     Nonzero prescribed fdot is rejected because eGB's NumPy and JAX source
@@ -56,6 +56,16 @@ def sampled_polarizations(source, times, *, physics_mode="1pn",
     if source.fdot != 0:
         raise ValueError("the shared source adapter requires fdot=0; use explicit eGB APIs")
     mode = eccentric_evolution_mode_label(evolution_mode)
+    if pm_sampling != "direct":
+        if (pm_sampling != "interpolate" or source_backend != "jax"
+                or mode != "peters_mathews"):
+            raise ValueError("orbital interpolation requires full PM with the JAX source")
+        # This optimization uses an implicit grid. Preserve all supplied
+        # timestamps whenever roundoff makes the idealized grid different.
+        if np.array_equal(times, expected):
+            return sampled_pm_uniform(source, times[0], dt, times.size, order=order,
+                                      device=device, physics_mode=physics_mode,
+                                      method=pm_sampling, **evolution_options)
     if source_backend == "numpy":
         hp, hc = eccentric_polarizations(
             source, times, physics_mode=physics_mode,
@@ -67,22 +77,28 @@ def sampled_polarizations(source, times, *, physics_mode="1pn",
         )
     if source_backend != "jax":
         raise ValueError("source_backend must be numpy or jax")
-    if mode != "fixed":
-        raise ValueError("JAX source generation supports fixed elements; select numpy for PM evolution")
-    if evolution_options:
-        raise ValueError("PM integration options apply to the numpy source backend")
     from .eccentric_jax import (
         pack_eccentric_sources, eccentric_complex_strain_batch_jax_array_options,
     )
-    options = eccentric_physics_options(physics_mode)
     target = _device(device)
-    packed = jax.device_put(pack_eccentric_sources(source), target)
     grid = jax.device_put(times, target)
-    strain = eccentric_complex_strain_batch_jax_array_options(
-        packed, grid,
-        include_1pn_orbital_corrections=options.include_1pn_orbital_corrections,
-        include_periastron_advance=options.include_periastron_advance,
-    )[0]
+    if mode == "peters_mathews":
+        from .pm_jax import prepare_pm, pm_strain
+        plan = prepare_pm(source, times[0], times[-1], physics_mode=physics_mode,
+                          device=target, **evolution_options)
+        strain = pm_strain(plan, grid)
+    elif mode == "fixed":
+        if evolution_options:
+            raise ValueError("PM integration options require PM evolution")
+        options = eccentric_physics_options(physics_mode)
+        packed = jax.device_put(pack_eccentric_sources(source), target)
+        strain = eccentric_complex_strain_batch_jax_array_options(
+            packed, grid,
+            include_1pn_orbital_corrections=options.include_1pn_orbital_corrections,
+            include_periastron_advance=options.include_periastron_advance,
+        )[0]
+    else:
+        raise ValueError("JAX supports fixed or full Peters-Mathews evolution; select numpy for diagnostic modes")
     # eGB's complex source is h_plus - i h_cross.
     values = jnp.stack((strain.real, -strain.imag))
     if not bool(jnp.all(jnp.isfinite(values))):
@@ -91,6 +107,20 @@ def sampled_polarizations(source, times, *, physics_mode="1pn",
         jax.device_put(np.float64(times[0]), target),
         jax.device_put(np.float64(dt), target), values, order,
     )
+
+
+def sampled_pm_uniform(source, origin_s, dt_s, size, *, order=39, device=None,
+                       method="direct", physics_mode="1pn", **integration_options):
+    """STRIDE sampled source on an implicit uniform grid, including full PM."""
+    from .pm_sampling import pm_uniform_polarizations
+    if (isinstance(order, (bool, np.bool_)) or not isinstance(order, (int, np.integer))
+            or order < 1 or order % 2 != 1 or size < order+1):
+        raise ValueError("an odd positive interpolation order and its full stencil are required")
+    target = _device(device)
+    values = pm_uniform_polarizations(source, origin_s, dt_s, size, device=target,
+                                      method=method, physics_mode=physics_mode, **integration_options)
+    return SampledPolarizations(jax.device_put(np.float64(origin_s), target),
+                               jax.device_put(np.float64(dt_s), target), values, order)
 
 
 def _device(device):

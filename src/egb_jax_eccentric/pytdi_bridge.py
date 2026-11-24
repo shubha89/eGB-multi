@@ -7,7 +7,7 @@ from collections.abc import Callable
 import numpy as np
 from numpy.typing import NDArray
 
-from .eccentric import EccentricBinaryParams
+from .eccentric import DEFAULT_ECCENTRIC_EVOLUTION, EccentricBinaryParams
 from .eccentric_jax import eccentric_links_jax, precompute_jax_link_geometry
 from .geometry import LISAState
 
@@ -255,6 +255,7 @@ def eccentric_xyz_jax(
     geometry: dict[str, NDArray[np.float64]] | None = None,
     batch_size: int = 1024,
     physics_mode: str = "1pn",
+    evolution_mode: str = DEFAULT_ECCENTRIC_EVOLUTION,
     generation: int = 1,
     measurement_order: int = 3,
     delay_order: int = 3,
@@ -276,6 +277,7 @@ def eccentric_xyz_jax(
         geometry,
         batch_size=batch_size,
         physics_mode=physics_mode,
+        evolution_mode=evolution_mode,
     )
     return xyz_from_links(
         state,

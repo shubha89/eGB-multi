@@ -1,7 +1,7 @@
 # eGB-multi
 
 Eccentric Galactic-binary waveforms and time-domain LISA responses. The package
-provides Newtonian and conservative 1PN orbital dynamics, optional leading
+provides Newtonian and conservative 1PN orbital dynamics, leading
 Peters–Mathews evolution, six retarded Doppler links, and pyTDI Michelson XYZ/AET.
 JAX link generation and reusable geometry support repeated source evaluations.
 STRIDE is included in this repository and installation: its `lisa_stride`
@@ -39,6 +39,8 @@ hplus, hcross = eccentric_polarizations(
 )
 ```
 
+Time-domain eccentric waveforms include orbit-averaged Peters–Mathews evolution by default.
+Use `evolution_mode="fixed"` to hold the intrinsic orbital elements fixed.
 Source physics and secular evolution are separate options. Fixed intrinsic
 parameters, Newtonian/1PN orbital choices and partial Peters diagnostics are
 available. The [model/API scope](docs/model_scope.md) describes the approximations,
@@ -61,7 +63,7 @@ quantities are recomputed on every call.
 python -m pip install ".[orbits,cpu]"
 python examples/egb_stride.py --backend jax --source-backend jax
 python examples/egb_stride.py --backend numba
-python examples/egb_stride.py --evolution peters_mathews --source-backend numpy
+python examples/egb_stride.py --evolution fixed --source-backend jax
 ```
 
 The [STRIDE guide](docs/stride.md) describes array interfaces, geometry, ordered

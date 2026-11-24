@@ -3,7 +3,7 @@ from pathlib import Path
 import argparse
 import json
 import numpy as np
-from egb_multi.eccentric import EccentricBinaryParams
+from egb_multi.eccentric import DEFAULT_ECCENTRIC_EVOLUTION, EccentricBinaryParams
 
 
 def arguments(description, *, native=False):
@@ -12,8 +12,10 @@ def arguments(description, *, native=False):
     parser.add_argument("--dt", type=float, default=2.5, help="source/output cadence in seconds")
     parser.add_argument("--f-mhz", type=float, default=3., help="initial mean motion divided by pi, in mHz")
     parser.add_argument("--eccentricity", type=float, default=.1)
-    parser.add_argument("--evolution", choices=["fixed", "peters_mathews"], default="fixed")
+    parser.add_argument("--evolution", choices=["fixed", "peters_mathews"], default=DEFAULT_ECCENTRIC_EVOLUTION)
     parser.add_argument("--source-backend", choices=["numpy", "jax"], default="jax")
+    parser.add_argument("--pm-sampling", choices=["direct", "interpolate"], default="direct",
+                        help="full-PM JAX source sampling method")
     parser.add_argument("--output", type=Path, help="optional NPZ output; otherwise print a scalar summary only")
     if native:
         parser.add_argument("--backend", choices=["cpu", "cuda11x", "cuda12x"], default="cpu")
@@ -28,8 +30,8 @@ def arguments(description, *, native=False):
         parser.error("at least 256 retained samples and a finite positive cadence are required")
     if not np.isfinite(args.f_mhz) or args.f_mhz <= 0 or not 0 <= args.eccentricity < 1:
         parser.error("positive frequency scale and 0 <= eccentricity < 1 required")
-    if args.evolution != "fixed" and args.source_backend == "jax":
-        parser.error("use --source-backend numpy for Peters-Mathews evolution")
+    if args.pm_sampling == "interpolate" and (args.source_backend != "jax" or args.evolution != "peters_mathews"):
+        parser.error("orbital interpolation requires --source-backend jax --evolution peters_mathews")
     margin = int(round(5000./args.dt))
     if margin*args.dt != 5000.:
         parser.error("choose a cadence that divides the 5000-second source margin exactly")

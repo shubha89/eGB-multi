@@ -94,6 +94,52 @@ For Numba, prepare with `backend='numba'` and transfer the source once with
 The CPU path expects immutable contiguous NumPy samples. Transfers are explicit
 so repeated-call timing does not hide host/device adaptation.
 
+### Evolving eGB sources
+
+For one Julian year at 2.5 s cadence, including 5,000 s of source padding at
+each end, the eGB adapter can construct the source grid directly on the device.
+
+```python
+from egb_multi.stride import sampled_pm_uniform
+
+sampled = sampled_pm_uniform(source, origin_s=0., dt_s=2.5, size=12_627_040,
+                             method="interpolate", device="cpu")
+```
+
+The default `method="direct"` evaluates both polarizations at every requested
+time. Both methods integrate the same orbit-averaged Peters–Mathews equations
+and retain the selected conservative dynamics. The integrator solves for
+changes in radial mean motion, time eccentricity and the two secular phases.
+It compares solutions at two step sizes throughout each polynomial segment.
+A prepared orbit can be queried in blocks using `prepare_pm` and `pm_strain`
+in `egb_multi.pm_jax`. Rebuild it when the source parameters or required
+time interval change. The checked preparation and refinement run from Python.
+The integration steps, dense evaluations and waveform kernels run in JAX.
+
+On a uniform grid, `method="interpolate"` looks for an integer sample spacing
+close to a whole number of orbital periods. At a fixed offset within this
+spacing the polarizations vary slowly across successive orbits. The code
+interpolates this variation separately at every offset, and compares the
+interpolant with direct waveform evaluations between every pair of interpolation
+nodes. The largest probe discrepancy must be below `1e-11` times the largest
+absolute anchor polarization. Smaller blocks or direct evaluation handle cases
+that fail the check. The method preserves the requested output cadence. For
+the selected method, block length and measured probe error use
+`egb_multi.pm_sampling.pm_uniform_polarizations(..., return_info=True)`.
+Interpolation is opt-in and validated on CPU. Different interpolation block
+shapes can incur new JAX compilation costs during inference.
+
+For supplied uniform timestamps, `sampled_polarizations(..., source_backend="jax")`
+defaults to full Peters–Mathews evolution. Set `evolution_mode="fixed"` to hold the
+orbital elements constant. The default PM sampler uses direct JAX source evaluation on the
+supplied grid. Use `pm_sampling="interpolate"` to request the fast sampler
+when the timestamps exactly match their implicit uniform grid. The executable
+examples expose the same option as `--pm-sampling interpolate`. The independent SciPy source remains available through
+`source_backend="numpy"`. The partial-PM diagnostic prescriptions are
+available with that backend. The [annual source benchmark](../tests/benchmarks/pm_annual.py)
+measures synchronized fresh waveform calls and compares against SciPy and
+direct JAX. Its clocks end at the two source polarizations.
+
 ## Reuse, batches and streaming
 
 Detector plans and source states are PyTrees with dynamic array leaves. Pass

@@ -3,8 +3,7 @@
 eGB-multi evaluates source waveforms through retarded LISA links and TDI.
 The present source model uses constant component masses and quadrupole
 polarizations on Newtonian or conservative 1PN quasi-Keplerian orbits.
-The 1PN option is not a complete 1PN amplitude model. Radiation reaction is
-optional leading orbit-averaged Peters evolution for an isolated binary.
+The 1PN option is not a complete 1PN amplitude model. Radiation reaction follows the leading orbit-averaged Peters equations for an isolated binary.
 
 ## Physics represented and omitted
 
@@ -32,6 +31,11 @@ included. `phi0` is an orbital phase; the leading circular GW phase is twice
 that phase. Source epochs and detector timestamps must be stated explicitly.
 Sky latitude/longitude and polarization vectors use barycentric mean ecliptic
 J2000 coordinates; native ICRS orbit positions must be converted consistently.
+
+Time-domain eccentric sources and their exact links evolve the orbit by default.
+Select `evolution_mode="fixed"` for the former fixed-element behavior or the
+prescribed JAX chirp. The fixed-harmonic and sideband approximations and
+`eccentric_links_interpolated_jax` use fixed orbital elements.
 
 | API path | Treatment of a supplied `fdot` |
 |---|---|

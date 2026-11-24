@@ -164,7 +164,9 @@ def test_jax_eccentric_links_auto_can_select_peters_mathews_fallback():
     auto_pm = eccentric_links_jax(source, geometry, batch_size=2, evolution_mode="auto", pm_mismatch_tolerance=0.0)
     fixed = eccentric_links_jax(source, geometry, batch_size=2, evolution_mode="fixed")
 
+    default = eccentric_links_jax(source, geometry, batch_size=2)
     for label in explicit_pm:
+        np.testing.assert_array_equal(default[label], explicit_pm[label])
         assert np.all(np.isfinite(explicit_pm[label]))
         assert np.allclose(auto_pm[label], explicit_pm[label], rtol=5.0e-10, atol=1.0e-28)
     assert any(np.linalg.norm(explicit_pm[label] - fixed[label]) > 0.0 for label in explicit_pm)
@@ -188,7 +190,7 @@ def test_jax_interpolated_links_are_close_to_exact_jax_links():
     )
     geometry = precompute_jax_link_geometry(state)
 
-    exact = eccentric_links_jax(source, geometry, batch_size=2)
+    exact = eccentric_links_jax(source, geometry, batch_size=2, evolution_mode="fixed")
     interpolated = eccentric_links_interpolated_jax(source, geometry, batch_size=2)
 
     for label in exact:

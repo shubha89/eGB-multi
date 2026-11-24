@@ -65,7 +65,7 @@ def eccentric_components_for_fastgb_response(
     projection_frequency = eccentric_harmonic_projection_angular_frequency(source)
     period = 2.0 * np.pi / projection_frequency
     sample_times = source.t0 + np.linspace(0.0, period, samples, endpoint=False)
-    hplus, hcross = eccentric_polarizations(source, sample_times)
+    hplus, hcross = eccentric_polarizations(source, sample_times, evolution_mode="fixed")
 
     eplus, ecross = source.polarization_basis()
     cosps = np.cos(2.0 * source.psi)

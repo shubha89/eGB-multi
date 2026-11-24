@@ -22,10 +22,10 @@ def test_sampled_source_backends_preserve_native_polarizations(physics, eccentri
         m1_solar=1.1, m2_solar=.4, inclination=.9, phi0=.7, psi=.4,
     )
     times = 27612900.+np.arange(512)*1.25+.125
-    expected = np.array(eccentric_polarizations(source, times, physics_mode=physics))
+    expected = np.array(eccentric_polarizations(source, times, physics_mode=physics, evolution_mode="fixed"))
     for backend in ("numpy", "jax"):
         sampled = sampled_polarizations(
-            source, times, physics_mode=physics, source_backend=backend, device="cpu",
+            source, times, physics_mode=physics, evolution_mode="fixed", source_backend=backend, device="cpu",
         )
         assert isinstance(sampled.values, jax.Array)
         assert sampled.values.dtype == np.float64
@@ -34,14 +34,14 @@ def test_sampled_source_backends_preserve_native_polarizations(physics, eccentri
         assert np.linalg.norm(actual-expected)/np.linalg.norm(expected) < 3e-12
 
 
-def test_pm_uses_existing_source_and_jax_rejects_unsupported_evolution():
+def test_pm_backends_match_and_invalid_grids_are_rejected():
     source = EccentricBinaryParams(mean_motion=np.pi*.003, eccentricity=.1)
     times = np.arange(512)*2.5
     expected = np.array(eccentric_polarizations(source, times, evolution_mode="peters_mathews"))
-    actual = sampled_polarizations(source, times, evolution_mode="peters_mathews")
+    actual = sampled_polarizations(source, times)
     np.testing.assert_array_equal(actual.values, expected)
-    with pytest.raises(ValueError, match="fixed elements"):
-        sampled_polarizations(source, times, evolution_mode="peters_mathews", source_backend="jax")
+    evolved = sampled_polarizations(source, times, source_backend="jax")
+    assert np.linalg.norm(evolved.values-expected)/np.linalg.norm(expected) < 1e-11
     for invalid in [times[::-1], times+np.sin(times)*.01, times[:2], times*np.nan]:
         with pytest.raises(ValueError):
             sampled_polarizations(source, invalid)

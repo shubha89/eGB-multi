@@ -72,7 +72,7 @@ def main():
     tick = time.perf_counter()
     sampled = sampled_polarizations(
         source, source_times, physics_mode="1pn", evolution_mode=args.evolution,
-        source_backend=args.source_backend, device=source_device,
+        pm_sampling=args.pm_sampling, source_backend=args.source_backend, device=source_device,
     )
     jax.block_until_ready(sampled.values)
     source_s = time.perf_counter()-tick
@@ -94,7 +94,7 @@ def main():
     summary = dict(
         engine="fastlisaresponse", fastlisaresponse_version=version("fastlisaresponse"),
         response_backend=args.backend, source_backend=args.source_backend,
-        source_parameters=asdict(source), physics_mode="1pn", evolution_mode=args.evolution,
+        source_parameters=asdict(source), physics_mode="1pn", evolution_mode=args.evolution, pm_sampling=args.pm_sampling,
         geometry="shared native orbit; ecliptic; instantaneous emitter",
         native_order=25, orbit_dt_s=args.orbit_dt,
         setup_s=setup_s, source_s=source_s, projection_s=links_s, tdi_s=tdi_s,

@@ -19,7 +19,8 @@ def run(out):
     for f,e in [(.001,0.),(.001,.3),(.003,.3),(.01,.6)]:
         s=EccentricBinaryParams(mean_motion=np.pi*f,eccentricity=e,
             m1_solar=.8,m2_solar=.6,inclination=.8,phi0=.2)
-        def call():return eccentric_complex_strain_batch_jax(s,t,physics_mode='1pn')[0]
+        def call():
+            return eccentric_complex_strain_batch_jax(s, t, physics_mode="1pn", evolution_mode="fixed")[0]
         tick=time.perf_counter();h=call();cold=time.perf_counter()-tick
         warm=[]
         for _ in range(3):
