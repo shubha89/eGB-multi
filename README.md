@@ -71,6 +71,10 @@ delays, precision, batching, streaming and cache ownership. Import directly
 from `lisa_stride`, or use the eGB adapters in `egb_multi.stride`.
 The historical `xtdi` namespace remains available.
 
+For annual PM-on waveforms, the [cadence and batching guide](docs/annual_cadence.md)
+shows how to choose a sampling interval, reuse a fixed sky, and evaluate proposals
+with independent directions on a common grid.
+
 To use the optional upstream fastlisaresponse engine:
 
 ```sh

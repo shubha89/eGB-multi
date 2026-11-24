@@ -10,9 +10,11 @@ import jax
 import jax.numpy as jnp
 
 from lisa_stride import (
-    DetectorResponse, SampledPolarizations, StreamedDetectorResponse, TDIPlan,
+    DetectorResponse, FixedSkyResponse, SampledPolarizations, StreamedDetectorResponse, TDIPlan,
     xyz_to_aet,
 )
+from .cadence import annual_pm_grid, recommend_cadence
+from .pm_batch import sampled_pm_batch
 from .eccentric import (
     DEFAULT_ECCENTRIC_EVOLUTION,
     eccentric_evolution_mode_label, eccentric_physics_options,
@@ -21,6 +23,7 @@ from .eccentric import (
 
 __all__ = [
     "DetectorResponse", "SampledPolarizations", "StreamedDetectorResponse",
+    "annual_pm_grid", "recommend_cadence", "FixedSkyResponse", "sampled_pm_batch",
     "TDIPlan", "xyz_to_aet", "sampled_polarizations", "sampled_pm_uniform", "geometry_from_lisaorbits",
 ]
 

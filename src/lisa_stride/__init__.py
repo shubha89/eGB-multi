@@ -6,6 +6,7 @@ The xtdi namespace preserves the established explicit CPU API.
 from xtdi.common import LINK_LABELS
 from xtdi.jax_response import JAXDetectorResponse,JAXStreamedDetectorResponse,JAXTDIPlan
 from .sampled import SampledPolarizations
+from .fixed_sky import FixedSkyResponse
 __version__='0.1.1.dev2'
 
 
@@ -50,4 +51,4 @@ class TDIPlan:
 xyz_to_aet=JAXDetectorResponse.xyz_to_aet
 __all__=['LINK_LABELS','DetectorResponse','StreamedDetectorResponse','TDIPlan',
          'SampledPolarizations','JAXDetectorResponse','JAXStreamedDetectorResponse',
-         'JAXTDIPlan','xyz_to_aet']
+         'JAXTDIPlan','FixedSkyResponse','xyz_to_aet']

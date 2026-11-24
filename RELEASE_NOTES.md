@@ -4,6 +4,15 @@ Time-domain eccentric waveforms now default to full orbit-averaged Peters–Math
 evolution. Use `evolution_mode="fixed"` in Python or `--evolution fixed` in the
 STRIDE and fastlisaresponse examples to reproduce fixed-element runs.
 
+Annual PM-on eGB waveforms accept a calibrated cadence selected by initial
+frequency and eccentricity. The numerical default is 2.5 s. Separate choices
+target XYZ waveform error and the noise-weighted A/E residual. The new
+`FixedSkyResponse` reuses projected geometry for one direction. The opt-in
+`sampled_pm_batch` evaluates independent 1PN PM sources on a shared grid
+and falls back to the adaptive solver where a single integration segment is
+insufficient. See the [cadence and batching guide](docs/annual_cadence.md)
+for the calibration domain, measured A100 timings and independent-sky use.
+
 STRIDE is bundled in the normal eGB-multi installation, using the current
 JAX-first `lisa_stride` interface and retaining the historical `xtdi` namespace.
 The optional `cpu` extra enables its Numba implementation. Detector, source,

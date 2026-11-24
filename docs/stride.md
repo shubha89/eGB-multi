@@ -249,3 +249,6 @@ SCI/TMI/REF measurements, clock/ranging errors and data gaps belongs to the
 surrounding detector analysis.
 
 GPL-2.0-only. See LICENSE and THIRD_PARTY_NOTICES for attribution.
+
+See the [cadence and batching guide](annual_cadence.md#batching-source-parameters-and-sky-directions)
+for fixed-sky reuse and independent-sky PM proposals.

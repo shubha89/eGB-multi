@@ -282,27 +282,37 @@ def _project(geometry, direction, plus, cross, angle):
 _project_kernel = jax.jit(_project)
 
 
-def _links(projection, values, origin, dt, source_order, *, unroll=False):
-    queries, a, b, denominator = projection
+def _source_coordinates(queries, origin, dt, samples, source_order):
+    """Indices, fractional delays and stencil support on the original source grid."""
     half = (source_order+1)//2
     normalized = _div(_sub(queries, origin), dt)
     integer = jnp.floor(normalized)
     supported = (jnp.isfinite(normalized) & (integer-(half-1) >= 0)
-                 & (integer+half < values.shape[-1]))
+                 & (integer+half < samples))
     fraction = _div(_sub(queries, _add(origin, _mul(integer, dt))), dt)
     lower, upper = fraction < 0., fraction >= 1.
     integer = jnp.where(lower, integer-1., jnp.where(upper, integer+1., integer))
     fraction = jnp.where(lower, fraction+1., jnp.where(upper, fraction-1., fraction))
     upper = fraction >= 1.
     integer, fraction = jnp.where(upper, integer+1., integer), jnp.where(upper, fraction-1., fraction)
-    supported &= (integer-(half-1) >= 0) & (integer+half < values.shape[-1])
-    polarized = _paired_interpolate(values, integer.astype(jnp.int64), fraction,
-        _scale(fraction, half, unroll=unroll), source_order, unroll=unroll)
+    supported &= (integer-(half-1) >= 0) & (integer+half < samples)
+    return integer.astype(jnp.int64), fraction, jnp.all(supported)
+
+
+def _projected_links(polarized, a, b, denominator):
     hp, hc = polarized[...,0,:,:], polarized[...,1,:,:]
     sender = _add(_mul(a, hp[...,:6,:]), _mul(b, hc[...,:6,:]))
     receiver = _add(_mul(a, hp[...,6+RECEIVERS,:]), _mul(b, hc[...,6+RECEIVERS,:]))
-    links = _div(_mul(.5, _sub(sender, receiver)), denominator)
-    valid = (jnp.all(supported) & jnp.isfinite(origin) & jnp.isfinite(dt) & (dt > 0.)
+    return _div(_mul(.5, _sub(sender, receiver)), denominator)
+
+
+def _links(projection, values, origin, dt, source_order, *, unroll=False):
+    queries, a, b, denominator = projection
+    centers, fraction, supported = _source_coordinates(queries, origin, dt, values.shape[-1], source_order)
+    polarized = _paired_interpolate(values, centers, fraction,
+        _scale(fraction, (source_order+1)//2, unroll=unroll), source_order, unroll=unroll)
+    links = _projected_links(polarized, a, b, denominator)
+    valid = (supported & jnp.isfinite(origin) & jnp.isfinite(dt) & (dt > 0.)
              & jnp.all(jnp.isfinite(links)))
     return links, valid
 
