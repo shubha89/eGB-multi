@@ -1,5 +1,9 @@
 # Optional cadence for an annual PM waveform
 
+The [executed adaptive cadence notebook](../examples/notebooks/adaptive_cadence.ipynb)
+walks through cadence selection, a one-year PM-on XYZ waveform, a one-day
+fine-grid comparison, and batches of sources at shared or different skies.
+
 The default annual grid samples every 2.5 seconds. Choose `"waveform"` to use the empirical cadence for the initial frequency and eccentricity of the source. Both the padded source and the detector must use the selected native spacing.
 
 ```python

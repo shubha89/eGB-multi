@@ -73,7 +73,14 @@ The historical `xtdi` namespace remains available.
 
 For annual PM-on waveforms, the [cadence and batching guide](docs/annual_cadence.md)
 shows how to choose a sampling interval, reuse a fixed sky, and evaluate proposals
-with independent directions on a common grid.
+with independent directions on a common grid. The [adaptive cadence notebook](examples/notebooks/adaptive_cadence.ipynb)
+generates a full year of XYZ, compares a day with a finer reference, and batches
+proposals at shared and different skies. To run it from this checkout:
+
+```sh
+python -m pip install -e ".[notebook]"
+jupyter lab examples/notebooks/adaptive_cadence.ipynb
+```
 
 To use the optional upstream fastlisaresponse engine:
 
